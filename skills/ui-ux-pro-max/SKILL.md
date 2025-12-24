@@ -1,6 +1,7 @@
 ---
 name: ui-ux-pro-max
 description: "UI/UXデザインインテリジェンス。57スタイル、95カラーパレット、56フォントペアリング、24チャートタイプ、8スタック（React、Next.js、Vue、Svelte、SwiftUI、React Native、Flutter、Tailwind）対応。アクション：plan、build、create、design、implement、review、fix、improve、optimize、enhance、refactor、UI/UXコードのチェック。プロジェクト：ウェブサイト、ランディングページ、ダッシュボード、管理パネル、EC、SaaS、ポートフォリオ、ブログ、モバイルアプリ、.html、.tsx、.vue、.svelte。要素：ボタン、モーダル、ナビバー、サイドバー、カード、テーブル、フォーム、チャート。スタイル：グラスモーフィズム、クレイモーフィズム、ミニマリズム、ブルータリズム、ニューモーフィズム、ベントグリッド、ダークモード、レスポンシブ、スキューモーフィズム、フラットデザイン。トピック：カラーパレット、アクセシビリティ、アニメーション、レイアウト、タイポグラフィ、フォントペアリング、スペーシング、ホバー、シャドウ、グラデーション。"
+license: MIT
 ---
 
 # UI/UX Pro Max - デザインインテリジェンス
@@ -226,3 +227,15 @@ UIコードを納品する前に、以下の項目を確認：
 - [ ] フォーム入力にラベルがある
 - [ ] 色だけが唯一の指標ではない
 - [ ] `prefers-reduced-motion`を尊重
+
+---
+
+## ライセンスと帰属
+
+このスキルは [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) をベースに日本語化したものです。
+
+**Original Author:** nextlevelbuilder
+**License:** MIT License
+**Japanese Translation:** skills-ja project
+
+詳細は同梱の `LICENSE` ファイルを参照してください。
