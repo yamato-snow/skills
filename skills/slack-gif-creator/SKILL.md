@@ -1,228 +1,228 @@
 ---
 name: slack-gif-creator
-description: Knowledge and utilities for creating animated GIFs optimized for Slack. Provides constraints, validation tools, and animation concepts. Use when users request animated GIFs for Slack like "make me a GIF of X doing Y for Slack."
+description: Slack向けに最適化されたアニメーションGIFを作成するための知識とユーティリティ。制約、検証ツール、アニメーションコンセプトを提供。ユーザーが「Slack用にXがYをしているGIFを作って」のようなSlack向けアニメーションGIFをリクエストした場合に使用。
 license: Complete terms in LICENSE.txt
 ---
 
 # Slack GIF Creator
 
-A toolkit providing utilities and knowledge for creating animated GIFs optimized for Slack.
+Slack向けに最適化されたアニメーションGIFを作成するためのユーティリティと知識を提供するツールキット。
 
-## Slack Requirements
+## Slack要件
 
-**Dimensions:**
-- Emoji GIFs: 128x128 (recommended)
-- Message GIFs: 480x480
+**寸法：**
+- 絵文字GIF：128x128（推奨）
+- メッセージGIF：480x480
 
-**Parameters:**
-- FPS: 10-30 (lower is smaller file size)
-- Colors: 48-128 (fewer = smaller file size)
-- Duration: Keep under 3 seconds for emoji GIFs
+**パラメータ：**
+- FPS：10-30（低いほどファイルサイズが小さい）
+- 色数：48-128（少ないほどファイルサイズが小さい）
+- 長さ：絵文字GIFは3秒未満に
 
-## Core Workflow
+## コアワークフロー
 
 ```python
 from core.gif_builder import GIFBuilder
 from PIL import Image, ImageDraw
 
-# 1. Create builder
+# 1. ビルダーを作成
 builder = GIFBuilder(width=128, height=128, fps=10)
 
-# 2. Generate frames
+# 2. フレームを生成
 for i in range(12):
     frame = Image.new('RGB', (128, 128), (240, 248, 255))
     draw = ImageDraw.Draw(frame)
 
-    # Draw your animation using PIL primitives
-    # (circles, polygons, lines, etc.)
+    # PILプリミティブを使用してアニメーションを描画
+    # （円、ポリゴン、線など）
 
     builder.add_frame(frame)
 
-# 3. Save with optimization
+# 3. 最適化して保存
 builder.save('output.gif', num_colors=48, optimize_for_emoji=True)
 ```
 
-## Drawing Graphics
+## グラフィックの描画
 
-### Working with User-Uploaded Images
-If a user uploads an image, consider whether they want to:
-- **Use it directly** (e.g., "animate this", "split this into frames")
-- **Use it as inspiration** (e.g., "make something like this")
+### ユーザーアップロード画像の操作
+ユーザーが画像をアップロードした場合、彼らが何を望んでいるか検討：
+- **直接使用**（例：「これをアニメーション化」「これをフレームに分割」）
+- **インスピレーションとして使用**（例：「これに似たものを作って」）
 
-Load and work with images using PIL:
+PILを使用して画像を読み込み操作：
 ```python
 from PIL import Image
 
 uploaded = Image.open('file.png')
-# Use directly, or just as reference for colors/style
+# 直接使用、または色/スタイルの参考として
 ```
 
-### Drawing from Scratch
-When drawing graphics from scratch, use PIL ImageDraw primitives:
+### ゼロから描画
+ゼロからグラフィックを描画する場合、PIL ImageDrawプリミティブを使用：
 
 ```python
 from PIL import ImageDraw
 
 draw = ImageDraw.Draw(frame)
 
-# Circles/ovals
+# 円/楕円
 draw.ellipse([x1, y1, x2, y2], fill=(r, g, b), outline=(r, g, b), width=3)
 
-# Stars, triangles, any polygon
+# 星、三角形、任意のポリゴン
 points = [(x1, y1), (x2, y2), (x3, y3), ...]
 draw.polygon(points, fill=(r, g, b), outline=(r, g, b), width=3)
 
-# Lines
+# 線
 draw.line([(x1, y1), (x2, y2)], fill=(r, g, b), width=5)
 
-# Rectangles
+# 長方形
 draw.rectangle([x1, y1, x2, y2], fill=(r, g, b), outline=(r, g, b), width=3)
 ```
 
-**Don't use:** Emoji fonts (unreliable across platforms) or assume pre-packaged graphics exist in this skill.
+**使用しない：** 絵文字フォント（プラットフォーム間で信頼性が低い）や、このスキルにパッケージ済みグラフィックがあると仮定すること。
 
-### Making Graphics Look Good
+### グラフィックを美しく見せる
 
-Graphics should look polished and creative, not basic. Here's how:
+グラフィックは基本的ではなく、洗練されてクリエイティブに見えるべき。方法は以下：
 
-**Use thicker lines** - Always set `width=2` or higher for outlines and lines. Thin lines (width=1) look choppy and amateurish.
+**太い線を使用** - 輪郭と線には常に`width=2`以上を設定。細い線（width=1）はギザギザでアマチュアっぽく見える。
 
-**Add visual depth**:
-- Use gradients for backgrounds (`create_gradient_background`)
-- Layer multiple shapes for complexity (e.g., a star with a smaller star inside)
+**視覚的な奥行きを追加**：
+- 背景にグラデーションを使用（`create_gradient_background`）
+- 複雑さのために複数のシェイプをレイヤー化（例：内側に小さな星がある星）
 
-**Make shapes more interesting**:
-- Don't just draw a plain circle - add highlights, rings, or patterns
-- Stars can have glows (draw larger, semi-transparent versions behind)
-- Combine multiple shapes (stars + sparkles, circles + rings)
+**シェイプをより興味深くする**：
+- 単純な円を描くだけでなく、ハイライト、リング、パターンを追加
+- 星にはグロー効果（背後に大きく半透明のバージョンを描画）
+- 複数のシェイプを組み合わせる（星＋きらめき、円＋リング）
 
-**Pay attention to colors**:
-- Use vibrant, complementary colors
-- Add contrast (dark outlines on light shapes, light outlines on dark shapes)
-- Consider the overall composition
+**色に注意を払う**：
+- 鮮やかで補色的な色を使用
+- コントラストを追加（明るいシェイプには暗い輪郭、暗いシェイプには明るい輪郭）
+- 全体の構成を考慮
 
-**For complex shapes** (hearts, snowflakes, etc.):
-- Use combinations of polygons and ellipses
-- Calculate points carefully for symmetry
-- Add details (a heart can have a highlight curve, snowflakes have intricate branches)
+**複雑なシェイプ**（ハート、雪の結晶など）の場合：
+- ポリゴンと楕円の組み合わせを使用
+- 対称性のためにポイントを慎重に計算
+- ディテールを追加（ハートにはハイライトカーブ、雪の結晶には複雑な枝）
 
-Be creative and detailed! A good Slack GIF should look polished, not like placeholder graphics.
+クリエイティブで細部まで！良いSlack GIFは、プレースホルダーグラフィックではなく、洗練されて見えるべき。
 
-## Available Utilities
+## 利用可能なユーティリティ
 
 ### GIFBuilder (`core.gif_builder`)
-Assembles frames and optimizes for Slack:
+フレームを組み立てSlack向けに最適化：
 ```python
 builder = GIFBuilder(width=128, height=128, fps=10)
-builder.add_frame(frame)  # Add PIL Image
-builder.add_frames(frames)  # Add list of frames
+builder.add_frame(frame)  # PIL Imageを追加
+builder.add_frames(frames)  # フレームのリストを追加
 builder.save('out.gif', num_colors=48, optimize_for_emoji=True, remove_duplicates=True)
 ```
 
-### Validators (`core.validators`)
-Check if GIF meets Slack requirements:
+### バリデータ (`core.validators`)
+GIFがSlack要件を満たすか確認：
 ```python
 from core.validators import validate_gif, is_slack_ready
 
-# Detailed validation
+# 詳細な検証
 passes, info = validate_gif('my.gif', is_emoji=True, verbose=True)
 
-# Quick check
+# クイックチェック
 if is_slack_ready('my.gif'):
-    print("Ready!")
+    print("準備完了!")
 ```
 
-### Easing Functions (`core.easing`)
-Smooth motion instead of linear:
+### イージング関数 (`core.easing`)
+リニアではなくスムーズなモーション：
 ```python
 from core.easing import interpolate
 
-# Progress from 0.0 to 1.0
+# 0.0から1.0への進行
 t = i / (num_frames - 1)
 
-# Apply easing
+# イージングを適用
 y = interpolate(start=0, end=400, t=t, easing='ease_out')
 
-# Available: linear, ease_in, ease_out, ease_in_out,
+# 利用可能：linear, ease_in, ease_out, ease_in_out,
 #           bounce_out, elastic_out, back_out
 ```
 
-### Frame Helpers (`core.frame_composer`)
-Convenience functions for common needs:
+### フレームヘルパー (`core.frame_composer`)
+一般的なニーズのための便利な関数：
 ```python
 from core.frame_composer import (
-    create_blank_frame,         # Solid color background
-    create_gradient_background,  # Vertical gradient
-    draw_circle,                # Helper for circles
-    draw_text,                  # Simple text rendering
-    draw_star                   # 5-pointed star
+    create_blank_frame,         # ソリッドカラー背景
+    create_gradient_background,  # 垂直グラデーション
+    draw_circle,                # 円のヘルパー
+    draw_text,                  # シンプルなテキストレンダリング
+    draw_star                   # 5角星
 )
 ```
 
-## Animation Concepts
+## アニメーションコンセプト
 
-### Shake/Vibrate
-Offset object position with oscillation:
-- Use `math.sin()` or `math.cos()` with frame index
-- Add small random variations for natural feel
-- Apply to x and/or y position
+### シェイク/バイブレート
+オシレーションでオブジェクト位置をオフセット：
+- フレームインデックスで`math.sin()`または`math.cos()`を使用
+- 自然な感触のために小さなランダム変動を追加
+- x位置および/またはy位置に適用
 
-### Pulse/Heartbeat
-Scale object size rhythmically:
-- Use `math.sin(t * frequency * 2 * math.pi)` for smooth pulse
-- For heartbeat: two quick pulses then pause (adjust sine wave)
-- Scale between 0.8 and 1.2 of base size
+### パルス/ハートビート
+オブジェクトサイズをリズミカルにスケール：
+- スムーズなパルスには`math.sin(t * frequency * 2 * math.pi)`を使用
+- ハートビートの場合：2回の素早いパルスの後に一時停止（正弦波を調整）
+- ベースサイズの0.8から1.2の間でスケール
 
-### Bounce
-Object falls and bounces:
-- Use `interpolate()` with `easing='bounce_out'` for landing
-- Use `easing='ease_in'` for falling (accelerating)
-- Apply gravity by increasing y velocity each frame
+### バウンス
+オブジェクトが落下してバウンス：
+- 着地には`interpolate()`で`easing='bounce_out'`を使用
+- 落下（加速）には`easing='ease_in'`を使用
+- 各フレームでy速度を増加させて重力を適用
 
-### Spin/Rotate
-Rotate object around center:
-- PIL: `image.rotate(angle, resample=Image.BICUBIC)`
-- For wobble: use sine wave for angle instead of linear
+### スピン/回転
+オブジェクトを中心周りで回転：
+- PIL：`image.rotate(angle, resample=Image.BICUBIC)`
+- 揺れの場合：リニアではなく角度に正弦波を使用
 
-### Fade In/Out
-Gradually appear or disappear:
-- Create RGBA image, adjust alpha channel
-- Or use `Image.blend(image1, image2, alpha)`
-- Fade in: alpha from 0 to 1
-- Fade out: alpha from 1 to 0
+### フェードイン/アウト
+徐々に出現または消失：
+- RGBA画像を作成し、アルファチャンネルを調整
+- または`Image.blend(image1, image2, alpha)`を使用
+- フェードイン：アルファを0から1へ
+- フェードアウト：アルファを1から0へ
 
-### Slide
-Move object from off-screen to position:
-- Start position: outside frame bounds
-- End position: target location
-- Use `interpolate()` with `easing='ease_out'` for smooth stop
-- For overshoot: use `easing='back_out'`
+### スライド
+オブジェクトを画面外から位置へ移動：
+- 開始位置：フレーム境界外
+- 終了位置：ターゲット位置
+- スムーズな停止には`interpolate()`で`easing='ease_out'`を使用
+- オーバーシュートには`easing='back_out'`を使用
 
-### Zoom
-Scale and position for zoom effect:
-- Zoom in: scale from 0.1 to 2.0, crop center
-- Zoom out: scale from 2.0 to 1.0
-- Can add motion blur for drama (PIL filter)
+### ズーム
+ズーム効果のためにスケールと位置を調整：
+- ズームイン：0.1から2.0にスケール、中央をクロップ
+- ズームアウト：2.0から1.0にスケール
+- ドラマのためにモーションブラーを追加可能（PILフィルター）
 
-### Explode/Particle Burst
-Create particles radiating outward:
-- Generate particles with random angles and velocities
-- Update each particle: `x += vx`, `y += vy`
-- Add gravity: `vy += gravity_constant`
-- Fade out particles over time (reduce alpha)
+### エクスプロード/パーティクルバースト
+外向きに放射するパーティクルを作成：
+- ランダムな角度と速度でパーティクルを生成
+- 各パーティクルを更新：`x += vx`、`y += vy`
+- 重力を追加：`vy += gravity_constant`
+- 時間とともにパーティクルをフェードアウト（アルファを減少）
 
-## Optimization Strategies
+## 最適化戦略
 
-Only when asked to make the file size smaller, implement a few of the following methods:
+ファイルサイズを小さくするよう依頼された場合のみ、以下のいくつかの方法を実装：
 
-1. **Fewer frames** - Lower FPS (10 instead of 20) or shorter duration
-2. **Fewer colors** - `num_colors=48` instead of 128
-3. **Smaller dimensions** - 128x128 instead of 480x480
-4. **Remove duplicates** - `remove_duplicates=True` in save()
-5. **Emoji mode** - `optimize_for_emoji=True` auto-optimizes
+1. **フレーム数を減らす** - 低いFPS（20ではなく10）または短い長さ
+2. **色数を減らす** - 128ではなく`num_colors=48`
+3. **寸法を小さく** - 480x480ではなく128x128
+4. **重複を削除** - save()で`remove_duplicates=True`
+5. **絵文字モード** - `optimize_for_emoji=True`で自動最適化
 
 ```python
-# Maximum optimization for emoji
+# 絵文字の最大最適化
 builder.save(
     'emoji.gif',
     num_colors=48,
@@ -231,23 +231,23 @@ builder.save(
 )
 ```
 
-## Philosophy
+## 哲学
 
-This skill provides:
-- **Knowledge**: Slack's requirements and animation concepts
-- **Utilities**: GIFBuilder, validators, easing functions
-- **Flexibility**: Create the animation logic using PIL primitives
+このスキルが提供するもの：
+- **知識**：Slackの要件とアニメーションコンセプト
+- **ユーティリティ**：GIFBuilder、バリデータ、イージング関数
+- **柔軟性**：PILプリミティブを使用してアニメーションロジックを作成
 
-It does NOT provide:
-- Rigid animation templates or pre-made functions
-- Emoji font rendering (unreliable across platforms)
-- A library of pre-packaged graphics built into the skill
+このスキルが提供しないもの：
+- 固定のアニメーションテンプレートや事前作成された関数
+- 絵文字フォントレンダリング（プラットフォーム間で信頼性が低い）
+- スキルに組み込まれたパッケージ済みグラフィックのライブラリ
 
-**Note on user uploads**: This skill doesn't include pre-built graphics, but if a user uploads an image, use PIL to load and work with it - interpret based on their request whether they want it used directly or just as inspiration.
+**ユーザーアップロードに関する注意**：このスキルは事前構築されたグラフィックを含まないが、ユーザーが画像をアップロードした場合は、PILを使用して読み込み操作する - リクエストに基づいて直接使用するか、インスピレーションとしてのみ使用するか解釈する。
 
-Be creative! Combine concepts (bouncing + rotating, pulsing + sliding, etc.) and use PIL's full capabilities.
+クリエイティブに！コンセプトを組み合わせ（バウンス＋回転、パルス＋スライドなど）、PILの全機能を使用する。
 
-## Dependencies
+## 依存関係
 
 ```bash
 pip install pillow imageio numpy

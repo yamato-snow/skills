@@ -1,59 +1,58 @@
 ---
 name: theme-factory
-description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly.
+description: テーマを使用してアーティファクトをスタイリングするためのツールキット。これらのアーティファクトはスライド、ドキュメント、レポート、HTMLランディングページなど。10のプリセットテーマがあり、色/フォントを作成済みの任意のアーティファクトに適用可能、またはオンザフライで新しいテーマを生成可能。
 license: Complete terms in LICENSE.txt
 ---
 
+# Theme Factoryスキル
 
-# Theme Factory Skill
+このスキルは、プロフェッショナルなフォントとカラーテーマの厳選されたコレクションを提供し、各テーマには慎重に選ばれたカラーパレットとフォントペアリングがあります。テーマが選択されると、任意のアーティファクトに適用できます。
 
-This skill provides a curated collection of professional font and color themes themes, each with carefully selected color palettes and font pairings. Once a theme is chosen, it can be applied to any artifact.
+## 目的
 
-## Purpose
+プレゼンテーションスライドデッキに一貫したプロフェッショナルなスタイリングを適用するには、このスキルを使用。各テーマには以下が含まれる：
+- 16進カラーコード付きの統一されたカラーパレット
+- ヘッダーと本文用の補完的なフォントペアリング
+- 異なるコンテキストや対象者に適した独自のビジュアルアイデンティティ
 
-To apply consistent, professional styling to presentation slide decks, use this skill. Each theme includes:
-- A cohesive color palette with hex codes
-- Complementary font pairings for headers and body text
-- A distinct visual identity suitable for different contexts and audiences
+## 使用方法
 
-## Usage Instructions
+スライドデッキやその他のアーティファクトにスタイリングを適用するには：
 
-To apply styling to a slide deck or other artifact:
+1. **テーマショーケースを表示**：`theme-showcase.pdf`ファイルを表示して、ユーザーが利用可能なすべてのテーマを視覚的に確認できるようにする。変更は加えない；単に閲覧用にファイルを表示。
+2. **選択を尋ねる**：どのテーマをデッキに適用するか尋ねる
+3. **選択を待つ**：選択されたテーマについて明示的な確認を得る
+4. **テーマを適用**：テーマが選択されたら、選択されたテーマの色とフォントをデッキ/アーティファクトに適用
 
-1. **Show the theme showcase**: Display the `theme-showcase.pdf` file to allow users to see all available themes visually. Do not make any modifications to it; simply show the file for viewing.
-2. **Ask for their choice**: Ask which theme to apply to the deck
-3. **Wait for selection**: Get explicit confirmation about the chosen theme
-4. **Apply the theme**: Once a theme has been chosen, apply the selected theme's colors and fonts to the deck/artifact
+## 利用可能なテーマ
 
-## Themes Available
+以下の10テーマが利用可能で、すべて`theme-showcase.pdf`でショーケースされている：
 
-The following 10 themes are available, each showcased in `theme-showcase.pdf`:
+1. **Ocean Depths** - プロフェッショナルで落ち着いたマリタイムテーマ
+2. **Sunset Boulevard** - 暖かく鮮やかなサンセットカラー
+3. **Forest Canopy** - ナチュラルで落ち着いたアーストーン
+4. **Modern Minimalist** - クリーンでコンテンポラリーなグレースケール
+5. **Golden Hour** - リッチで暖かい秋のパレット
+6. **Arctic Frost** - クールでクリスプな冬インスパイアのテーマ
+7. **Desert Rose** - ソフトで洗練されたダスティトーン
+8. **Tech Innovation** - ボールドでモダンなテック美学
+9. **Botanical Garden** - フレッシュでオーガニックなガーデンカラー
+10. **Midnight Galaxy** - ドラマチックでコズミックなディープトーン
 
-1. **Ocean Depths** - Professional and calming maritime theme
-2. **Sunset Boulevard** - Warm and vibrant sunset colors
-3. **Forest Canopy** - Natural and grounded earth tones
-4. **Modern Minimalist** - Clean and contemporary grayscale
-5. **Golden Hour** - Rich and warm autumnal palette
-6. **Arctic Frost** - Cool and crisp winter-inspired theme
-7. **Desert Rose** - Soft and sophisticated dusty tones
-8. **Tech Innovation** - Bold and modern tech aesthetic
-9. **Botanical Garden** - Fresh and organic garden colors
-10. **Midnight Galaxy** - Dramatic and cosmic deep tones
+## テーマ詳細
 
-## Theme Details
+各テーマは`themes/`ディレクトリに以下を含む完全な仕様で定義されている：
+- 16進カラーコード付きの統一されたカラーパレット
+- ヘッダーと本文用の補完的なフォントペアリング
+- 異なるコンテキストや対象者に適した独自のビジュアルアイデンティティ
 
-Each theme is defined in the `themes/` directory with complete specifications including:
-- Cohesive color palette with hex codes
-- Complementary font pairings for headers and body text
-- Distinct visual identity suitable for different contexts and audiences
+## 適用プロセス
 
-## Application Process
+好みのテーマが選択された後：
+1. `themes/`ディレクトリから対応するテーマファイルを読み込む
+2. 指定された色とフォントをデッキ全体に一貫して適用
+3. 適切なコントラストと可読性を確保
+4. テーマのビジュアルアイデンティティをすべてのスライドで維持
 
-After a preferred theme is selected:
-1. Read the corresponding theme file from the `themes/` directory
-2. Apply the specified colors and fonts consistently throughout the deck
-3. Ensure proper contrast and readability
-4. Maintain the theme's visual identity across all slides
-
-## Create your Own Theme
-To handle cases where none of the existing themes work for an artifact, create a custom theme. Based on provided inputs, generate a new theme similar to the ones above. Give the theme a similar name describing what the font/color combinations represent. Use any basic description provided to choose appropriate colors/fonts. After generating the theme, show it for review and verification. Following that, apply the theme as described above.
+## 独自テーマの作成
+既存のテーマがアーティファクトに適さない場合、カスタムテーマを作成。提供された入力に基づいて、上記と同様の新しいテーマを生成。フォント/カラーの組み合わせが何を表すかを説明する同様の名前をテーマに付ける。提供された基本的な説明を使用して、適切な色/フォントを選択。テーマを生成した後、レビューと確認のために表示。その後、上記のようにテーマを適用。

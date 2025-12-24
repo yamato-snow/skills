@@ -1,375 +1,375 @@
 ---
 name: doc-coauthoring
-description: Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. This workflow helps users efficiently transfer context, refine content through iteration, and verify the doc works for readers. Trigger when user mentions writing docs, creating proposals, drafting specs, or similar documentation tasks.
+description: ドキュメント共同執筆のための構造化ワークフローをユーザーにガイド。ドキュメント、提案書、技術仕様書、決定文書、または同様の構造化コンテンツを書きたい場合に使用。このワークフローは、ユーザーが効率的にコンテキストを伝達し、イテレーションを通じてコンテンツを洗練し、読者にとってドキュメントが機能するかを検証するのを支援。ドキュメント作成、提案書起草、仕様書作成などのタスクが言及された場合にトリガー。
 ---
 
-# Doc Co-Authoring Workflow
+# ドキュメント共同執筆ワークフロー
 
-This skill provides a structured workflow for guiding users through collaborative document creation. Act as an active guide, walking users through three stages: Context Gathering, Refinement & Structure, and Reader Testing.
+このスキルは、コラボレイティブなドキュメント作成をガイドするための構造化ワークフローを提供します。アクティブなガイドとして、ユーザーを3つのステージ（コンテキスト収集、洗練と構造化、読者テスト）に導きます。
 
-## When to Offer This Workflow
+## このワークフローを提案するタイミング
 
-**Trigger conditions:**
-- User mentions writing documentation: "write a doc", "draft a proposal", "create a spec", "write up"
-- User mentions specific doc types: "PRD", "design doc", "decision doc", "RFC"
-- User seems to be starting a substantial writing task
+**トリガー条件：**
+- ユーザーがドキュメント作成に言及：「ドキュメントを書く」「提案書を作成」「仕様書を書く」「まとめる」
+- ユーザーが特定のドキュメントタイプに言及：「PRD」「設計ドキュメント」「決定文書」「RFC」
+- ユーザーが実質的なライティングタスクを開始しようとしている
 
-**Initial offer:**
-Offer the user a structured workflow for co-authoring the document. Explain the three stages:
+**最初の提案：**
+ドキュメント共同執筆のための構造化ワークフローを提案。3つのステージを説明：
 
-1. **Context Gathering**: User provides all relevant context while Claude asks clarifying questions
-2. **Refinement & Structure**: Iteratively build each section through brainstorming and editing
-3. **Reader Testing**: Test the doc with a fresh Claude (no context) to catch blind spots before others read it
+1. **コンテキスト収集**：Claudeが明確化の質問をしながら、ユーザーが関連するすべてのコンテキストを提供
+2. **洗練と構造化**：ブレインストーミングと編集を通じて各セクションを反復的に構築
+3. **読者テスト**：他の人が読む前に盲点を発見するため、新鮮なClaude（コンテキストなし）でドキュメントをテスト
 
-Explain that this approach helps ensure the doc works well when others read it (including when they paste it into Claude). Ask if they want to try this workflow or prefer to work freeform.
+このアプローチが、他の人が読むとき（Claudeに貼り付けるときを含む）にドキュメントがうまく機能することを保証するのに役立つことを説明。このワークフローを試すか、フリーフォームで作業するかを尋ねる。
 
-If user declines, work freeform. If user accepts, proceed to Stage 1.
+ユーザーが辞退した場合はフリーフォームで作業。承諾した場合はステージ1に進む。
 
-## Stage 1: Context Gathering
+## ステージ1：コンテキスト収集
 
-**Goal:** Close the gap between what the user knows and what Claude knows, enabling smart guidance later.
+**目標：** ユーザーが知っていることとClaudeが知っていることのギャップを埋め、後でスマートなガイダンスを可能にする。
 
-### Initial Questions
+### 最初の質問
 
-Start by asking the user for meta-context about the document:
+まず、ドキュメントに関するメタコンテキストをユーザーに尋ねる：
 
-1. What type of document is this? (e.g., technical spec, decision doc, proposal)
-2. Who's the primary audience?
-3. What's the desired impact when someone reads this?
-4. Is there a template or specific format to follow?
-5. Any other constraints or context to know?
+1. これはどのタイプのドキュメントですか？（例：技術仕様書、決定文書、提案書）
+2. 主な対象読者は誰ですか？
+3. 誰かがこれを読んだときの望ましいインパクトは何ですか？
+4. 従うべきテンプレートや特定のフォーマットはありますか？
+5. 知っておくべき他の制約やコンテキストはありますか？
 
-Inform them they can answer in shorthand or dump information however works best for them.
+省略形で回答したり、自分に合った方法で情報をダンプしたりできることを伝える。
 
-**If user provides a template or mentions a doc type:**
-- Ask if they have a template document to share
-- If they provide a link to a shared document, use the appropriate integration to fetch it
-- If they provide a file, read it
+**ユーザーがテンプレートを提供するか、ドキュメントタイプに言及した場合：**
+- 共有するテンプレートドキュメントがあるか尋ねる
+- 共有ドキュメントへのリンクを提供した場合は、適切なインテグレーションを使用してフェッチ
+- ファイルを提供した場合は読み込む
 
-**If user mentions editing an existing shared document:**
-- Use the appropriate integration to read the current state
-- Check for images without alt-text
-- If images exist without alt-text, explain that when others use Claude to understand the doc, Claude won't be able to see them. Ask if they want alt-text generated. If so, request they paste each image into chat for descriptive alt-text generation.
+**ユーザーが既存の共有ドキュメントの編集に言及した場合：**
+- 適切なインテグレーションを使用して現在の状態を読み込む
+- alt-textのない画像をチェック
+- alt-textのない画像が存在する場合、他の人がClaudeを使用してドキュメントを理解しようとするとき、Claudeはそれらを見ることができないことを説明。alt-textの生成を希望するか尋ねる。希望する場合は、説明的なalt-text生成のために各画像をチャットに貼り付けるよう依頼。
 
-### Info Dumping
+### 情報のダンプ
 
-Once initial questions are answered, encourage the user to dump all the context they have. Request information such as:
-- Background on the project/problem
-- Related team discussions or shared documents
-- Why alternative solutions aren't being used
-- Organizational context (team dynamics, past incidents, politics)
-- Timeline pressures or constraints
-- Technical architecture or dependencies
-- Stakeholder concerns
+最初の質問に回答したら、ユーザーが持っているすべてのコンテキストをダンプするよう促す。以下のような情報を要求：
+- プロジェクト/問題の背景
+- 関連するチームの議論や共有ドキュメント
+- 代替ソリューションが使用されていない理由
+- 組織のコンテキスト（チームダイナミクス、過去のインシデント、政治）
+- タイムラインのプレッシャーや制約
+- 技術的アーキテクチャや依存関係
+- ステークホルダーの懸念
 
-Advise them not to worry about organizing it - just get it all out. Offer multiple ways to provide context:
-- Info dump stream-of-consciousness
-- Point to team channels or threads to read
-- Link to shared documents
+整理することを心配する必要はない - すべて出すようにアドバイス。コンテキストを提供する複数の方法を提案：
+- 思考の流れのままに情報をダンプ
+- 読むべきチームチャンネルやスレッドを指定
+- 共有ドキュメントへのリンク
 
-**If integrations are available** (e.g., Slack, Teams, Google Drive, SharePoint, or other MCP servers), mention that these can be used to pull in context directly.
+**インテグレーションが利用可能な場合**（例：Slack、Teams、Google Drive、SharePoint、その他のMCPサーバー）、これらを使用してコンテキストを直接取り込めることに言及。
 
-**If no integrations are detected and in Claude.ai or Claude app:** Suggest they can enable connectors in their Claude settings to allow pulling context from messaging apps and document storage directly.
+**インテグレーションが検出されず、Claude.aiまたはClaudeアプリの場合：** Claude設定でコネクターを有効にして、メッセージングアプリやドキュメントストレージから直接コンテキストを取り込めるようにすることを提案。
 
-Inform them clarifying questions will be asked once they've done their initial dump.
+最初のダンプが終わったら明確化の質問をすることを伝える。
 
-**During context gathering:**
+**コンテキスト収集中：**
 
-- If user mentions team channels or shared documents:
-  - If integrations available: Inform them the content will be read now, then use the appropriate integration
-  - If integrations not available: Explain lack of access. Suggest they enable connectors in Claude settings, or paste the relevant content directly.
+- ユーザーがチームチャンネルや共有ドキュメントに言及した場合：
+  - インテグレーションが利用可能な場合：今からコンテンツを読むことを伝え、適切なインテグレーションを使用
+  - インテグレーションが利用できない場合：アクセスできないことを説明。Claude設定でコネクターを有効にするか、関連するコンテンツを直接貼り付けることを提案。
 
-- If user mentions entities/projects that are unknown:
-  - Ask if connected tools should be searched to learn more
-  - Wait for user confirmation before searching
+- ユーザーが不明なエンティティ/プロジェクトに言及した場合：
+  - 接続されたツールを検索して詳細を学ぶべきか尋ねる
+  - 検索する前にユーザーの確認を待つ
 
-- As user provides context, track what's being learned and what's still unclear
+- ユーザーがコンテキストを提供するにつれて、学んだことと不明な点を追跡
 
-**Asking clarifying questions:**
+**明確化の質問：**
 
-When user signals they've done their initial dump (or after substantial context provided), ask clarifying questions to ensure understanding:
+ユーザーが最初のダンプを完了したことを示す（または十分なコンテキストが提供された後）、理解を確認するために明確化の質問をする：
 
-Generate 5-10 numbered questions based on gaps in the context.
+コンテキストのギャップに基づいて5〜10個の番号付き質問を生成。
 
-Inform them they can use shorthand to answer (e.g., "1: yes, 2: see #channel, 3: no because backwards compat"), link to more docs, point to channels to read, or just keep info-dumping. Whatever's most efficient for them.
+省略形で回答できること（例：「1: はい、2: #channelを参照、3: 後方互換性のためno」）、さらにドキュメントへのリンク、読むべきチャンネルの指定、または情報のダンプを続けることができることを伝える。最も効率的な方法で。
 
-**Exit condition:**
-Sufficient context has been gathered when questions show understanding - when edge cases and trade-offs can be asked about without needing basics explained.
+**終了条件：**
+質問が理解を示すとき - 基本的なことを説明してもらわなくても、エッジケースやトレードオフについて質問できるとき - 十分なコンテキストが収集された。
 
-**Transition:**
-Ask if there's any more context they want to provide at this stage, or if it's time to move on to drafting the document.
+**移行：**
+この段階で提供したい追加のコンテキストがあるか、ドキュメントの起草に移る準備ができているかを尋ねる。
 
-If user wants to add more, let them. When ready, proceed to Stage 2.
+ユーザーがさらに追加したい場合は許可。準備ができたらステージ2に進む。
 
-## Stage 2: Refinement & Structure
+## ステージ2：洗練と構造化
 
-**Goal:** Build the document section by section through brainstorming, curation, and iterative refinement.
+**目標：** ブレインストーミング、キュレーション、反復的な洗練を通じてセクションごとにドキュメントを構築。
 
-**Instructions to user:**
-Explain that the document will be built section by section. For each section:
-1. Clarifying questions will be asked about what to include
-2. 5-20 options will be brainstormed
-3. User will indicate what to keep/remove/combine
-4. The section will be drafted
-5. It will be refined through surgical edits
+**ユーザーへの説明：**
+ドキュメントをセクションごとに構築することを説明。各セクションについて：
+1. 含めるべき内容について明確化の質問をする
+2. 5〜20のオプションをブレインストーミング
+3. ユーザーが保持/削除/組み合わせを指示
+4. セクションを起草
+5. 外科的な編集で洗練
 
-Start with whichever section has the most unknowns (usually the core decision/proposal), then work through the rest.
+最も不明な点が多いセクション（通常は核心の決定/提案）から始め、残りを進める。
 
-**Section ordering:**
+**セクションの順序：**
 
-If the document structure is clear:
-Ask which section they'd like to start with.
+ドキュメント構造が明確な場合：
+どのセクションから始めたいか尋ねる。
 
-Suggest starting with whichever section has the most unknowns. For decision docs, that's usually the core proposal. For specs, it's typically the technical approach. Summary sections are best left for last.
+最も不明な点が多いセクションから始めることを提案。決定文書の場合、通常は核心の提案。仕様書の場合、通常は技術的アプローチ。サマリーセクションは最後にするのが最善。
 
-If user doesn't know what sections they need:
-Based on the type of document and template, suggest 3-5 sections appropriate for the doc type.
+ユーザーが必要なセクションがわからない場合：
+ドキュメントタイプとテンプレートに基づいて、適切な3〜5つのセクションを提案。
 
-Ask if this structure works, or if they want to adjust it.
+この構造で問題ないか、調整したいか尋ねる。
 
-**Once structure is agreed:**
+**構造が合意されたら：**
 
-Create the initial document structure with placeholder text for all sections.
+すべてのセクションのプレースホルダーテキストで初期ドキュメント構造を作成。
 
-**If access to artifacts is available:**
-Use `create_file` to create an artifact. This gives both Claude and the user a scaffold to work from.
+**アーティファクトへのアクセスがある場合：**
+`create_file`を使用してアーティファクトを作成。これにより、Claudeとユーザーの両方が作業する土台ができる。
 
-Inform them that the initial structure with placeholders for all sections will be created.
+すべてのセクションのプレースホルダーで初期構造を作成することを伝える。
 
-Create artifact with all section headers and brief placeholder text like "[To be written]" or "[Content here]".
+すべてのセクションヘッダーと「[未作成]」や「[ここにコンテンツ]」などの簡潔なプレースホルダーテキストでアーティファクトを作成。
 
-Provide the scaffold link and indicate it's time to fill in each section.
+スキャフォールドリンクを提供し、各セクションを埋める時間であることを示す。
 
-**If no access to artifacts:**
-Create a markdown file in the working directory. Name it appropriately (e.g., `decision-doc.md`, `technical-spec.md`).
+**アーティファクトへのアクセスがない場合：**
+作業ディレクトリにマークダウンファイルを作成。適切な名前を付ける（例：`decision-doc.md`、`technical-spec.md`）。
 
-Inform them that the initial structure with placeholders for all sections will be created.
+すべてのセクションのプレースホルダーで初期構造を作成することを伝える。
 
-Create file with all section headers and placeholder text.
+すべてのセクションヘッダーとプレースホルダーテキストでファイルを作成。
 
-Confirm the filename has been created and indicate it's time to fill in each section.
+ファイル名が作成されたことを確認し、各セクションを埋める時間であることを示す。
 
-**For each section:**
+**各セクションについて：**
 
-### Step 1: Clarifying Questions
+### ステップ1：明確化の質問
 
-Announce work will begin on the [SECTION NAME] section. Ask 5-10 clarifying questions about what should be included:
+[セクション名]セクションの作業を開始することを発表。含めるべき内容について5〜10の明確化の質問をする：
 
-Generate 5-10 specific questions based on context and section purpose.
+コンテキストとセクションの目的に基づいて5〜10の具体的な質問を生成。
 
-Inform them they can answer in shorthand or just indicate what's important to cover.
+省略形で回答するか、カバーすべき重要な点を示すだけでよいことを伝える。
 
-### Step 2: Brainstorming
+### ステップ2：ブレインストーミング
 
-For the [SECTION NAME] section, brainstorm [5-20] things that might be included, depending on the section's complexity. Look for:
-- Context shared that might have been forgotten
-- Angles or considerations not yet mentioned
+[セクション名]セクションについて、セクションの複雑さに応じて含めるべきかもしれない[5〜20]個の項目をブレインストーミング。以下を探す：
+- 忘れられているかもしれない共有されたコンテキスト
+- まだ言及されていない角度や考慮事項
 
-Generate 5-20 numbered options based on section complexity. At the end, offer to brainstorm more if they want additional options.
+セクションの複雑さに基づいて5〜20の番号付きオプションを生成。最後に、追加のオプションが必要な場合はさらにブレインストーミングすることを提案。
 
-### Step 3: Curation
+### ステップ3：キュレーション
 
-Ask which points should be kept, removed, or combined. Request brief justifications to help learn priorities for the next sections.
+どのポイントを保持、削除、または組み合わせるべきか尋ねる。次のセクションの優先順位を学ぶのに役立つ簡単な理由を要求。
 
-Provide examples:
-- "Keep 1,4,7,9"
-- "Remove 3 (duplicates 1)"
-- "Remove 6 (audience already knows this)"
-- "Combine 11 and 12"
+例を提供：
+- 「1,4,7,9を保持」
+- 「3を削除（1と重複）」
+- 「6を削除（対象読者はすでに知っている）」
+- 「11と12を組み合わせる」
 
-**If user gives freeform feedback** (e.g., "looks good" or "I like most of it but...") instead of numbered selections, extract their preferences and proceed. Parse what they want kept/removed/changed and apply it.
+**ユーザーがフリーフォームのフィードバックを与えた場合**（例：「良さそう」や「ほとんど気に入っているけど...」）番号付きの選択ではなく、好みを抽出して進める。保持/削除/変更したいものを解析して適用。
 
-### Step 4: Gap Check
+### ステップ4：ギャップチェック
 
-Based on what they've selected, ask if there's anything important missing for the [SECTION NAME] section.
+選択したものに基づいて、[セクション名]セクションに欠けている重要なものがあるか尋ねる。
 
-### Step 5: Drafting
+### ステップ5：起草
 
-Use `str_replace` to replace the placeholder text for this section with the actual drafted content.
+`str_replace`を使用して、このセクションのプレースホルダーテキストを実際に起草したコンテンツに置き換える。
 
-Announce the [SECTION NAME] section will be drafted now based on what they've selected.
+選択したものに基づいて[セクション名]セクションを今から起草することを発表。
 
-**If using artifacts:**
-After drafting, provide a link to the artifact.
+**アーティファクトを使用している場合：**
+起草後、アーティファクトへのリンクを提供。
 
-Ask them to read through it and indicate what to change. Note that being specific helps learning for the next sections.
+読み通して、変更点を示すよう依頼。具体的であることが次のセクションの学習に役立つことを注記。
 
-**If using a file (no artifacts):**
-After drafting, confirm completion.
+**ファイルを使用している場合（アーティファクトなし）：**
+起草後、完了を確認。
 
-Inform them the [SECTION NAME] section has been drafted in [filename]. Ask them to read through it and indicate what to change. Note that being specific helps learning for the next sections.
+[ファイル名]に[セクション名]セクションを起草したことを伝える。読み通して、変更点を示すよう依頼。具体的であることが次のセクションの学習に役立つことを注記。
 
-**Key instruction for user (include when drafting the first section):**
-Provide a note: Instead of editing the doc directly, ask them to indicate what to change. This helps learning of their style for future sections. For example: "Remove the X bullet - already covered by Y" or "Make the third paragraph more concise".
+**ユーザーへの重要な指示（最初のセクションを起草するときに含める）：**
+注記を提供：ドキュメントを直接編集する代わりに、変更点を示すよう依頼。これにより、将来のセクションのためにスタイルを学習できる。例：「X箇条書きを削除 - すでにYでカバー」や「3番目の段落をより簡潔に」。
 
-### Step 6: Iterative Refinement
+### ステップ6：反復的な洗練
 
-As user provides feedback:
-- Use `str_replace` to make edits (never reprint the whole doc)
-- **If using artifacts:** Provide link to artifact after each edit
-- **If using files:** Just confirm edits are complete
-- If user edits doc directly and asks to read it: mentally note the changes they made and keep them in mind for future sections (this shows their preferences)
+ユーザーがフィードバックを提供するにつれて：
+- `str_replace`を使用して編集（ドキュメント全体を再印刷しない）
+- **アーティファクトを使用している場合：** 各編集後にアーティファクトへのリンクを提供
+- **ファイルを使用している場合：** 編集完了を確認するだけ
+- ユーザーがドキュメントを直接編集して読むよう依頼した場合：彼らが行った変更を心に留め、将来のセクションに活かす（これは彼らの好みを示す）
 
-**Continue iterating** until user is satisfied with the section.
+**反復を続ける** ユーザーがセクションに満足するまで。
 
-### Quality Checking
+### 品質チェック
 
-After 3 consecutive iterations with no substantial changes, ask if anything can be removed without losing important information.
+実質的な変更のない3回連続のイテレーション後、重要な情報を失うことなく削除できるものがあるか尋ねる。
 
-When section is done, confirm [SECTION NAME] is complete. Ask if ready to move to the next section.
+セクションが完了したら、[セクション名]が完了したことを確認。次のセクションに移る準備ができているか尋ねる。
 
-**Repeat for all sections.**
+**すべてのセクションで繰り返す。**
 
-### Near Completion
+### 完了間近
 
-As approaching completion (80%+ of sections done), announce intention to re-read the entire document and check for:
-- Flow and consistency across sections
-- Redundancy or contradictions
-- Anything that feels like "slop" or generic filler
-- Whether every sentence carries weight
+完了に近づいたら（セクションの80%以上が完了）、ドキュメント全体を再読み、以下をチェックする意図を発表：
+- セクション間のフローと一貫性
+- 冗長性や矛盾
+- 「スロップ」や一般的なフィラーに感じるもの
+- すべての文が重みを持っているか
 
-Read entire document and provide feedback.
+ドキュメント全体を読み、フィードバックを提供。
 
-**When all sections are drafted and refined:**
-Announce all sections are drafted. Indicate intention to review the complete document one more time.
+**すべてのセクションが起草され洗練されたら：**
+すべてのセクションが起草されたことを発表。もう一度完全なドキュメントをレビューする意図を示す。
 
-Review for overall coherence, flow, completeness.
+全体的な一貫性、フロー、完全性をレビュー。
 
-Provide any final suggestions.
+最終的な提案を提供。
 
-Ask if ready to move to Reader Testing, or if they want to refine anything else.
+読者テストに移る準備ができているか、他に洗練したいものがあるか尋ねる。
 
-## Stage 3: Reader Testing
+## ステージ3：読者テスト
 
-**Goal:** Test the document with a fresh Claude (no context bleed) to verify it works for readers.
+**目標：** ドキュメントが読者にとって機能するかを、新鮮なClaude（コンテキストの漏れなし）でテストして検証。
 
-**Instructions to user:**
-Explain that testing will now occur to see if the document actually works for readers. This catches blind spots - things that make sense to the authors but might confuse others.
+**ユーザーへの説明：**
+ドキュメントが実際に読者にとって機能するかをテストすることを説明。これにより盲点が発見される - 著者には意味があるが、他の人を混乱させるかもしれないこと。
 
-### Testing Approach
+### テストアプローチ
 
-**If access to sub-agents is available (e.g., in Claude Code):**
+**サブエージェントへのアクセスがある場合（例：Claude Code）：**
 
-Perform the testing directly without user involvement.
+ユーザーの関与なしにテストを直接実行。
 
-### Step 1: Predict Reader Questions
+### ステップ1：読者の質問を予測
 
-Announce intention to predict what questions readers might ask when trying to discover this document.
+読者がこのドキュメントを発見しようとするときに尋ねるかもしれない質問を予測する意図を発表。
 
-Generate 5-10 questions that readers would realistically ask.
+読者が現実的に尋ねる5〜10の質問を生成。
 
-### Step 2: Test with Sub-Agent
+### ステップ2：サブエージェントでテスト
 
-Announce that these questions will be tested with a fresh Claude instance (no context from this conversation).
+これらの質問を新鮮なClaudeインスタンス（この会話からのコンテキストなし）でテストすることを発表。
 
-For each question, invoke a sub-agent with just the document content and the question.
+各質問について、ドキュメントコンテンツと質問だけでサブエージェントを呼び出す。
 
-Summarize what Reader Claude got right/wrong for each question.
+各質問についてReader Claudeが正解/誤解したものを要約。
 
-### Step 3: Run Additional Checks
+### ステップ3：追加チェックを実行
 
-Announce additional checks will be performed.
+追加のチェックを実行することを発表。
 
-Invoke sub-agent to check for ambiguity, false assumptions, contradictions.
+曖昧さ、誤った前提、矛盾をチェックするためにサブエージェントを呼び出す。
 
-Summarize any issues found.
+見つかった問題を要約。
 
-### Step 4: Report and Fix
+### ステップ4：報告と修正
 
-If issues found:
-Report that Reader Claude struggled with specific issues.
+問題が見つかった場合：
+Reader Claudeが特定の問題で苦労したことを報告。
 
-List the specific issues.
+具体的な問題をリスト。
 
-Indicate intention to fix these gaps.
+これらのギャップを修正する意図を示す。
 
-Loop back to refinement for problematic sections.
-
----
-
-**If no access to sub-agents (e.g., claude.ai web interface):**
-
-The user will need to do the testing manually.
-
-### Step 1: Predict Reader Questions
-
-Ask what questions people might ask when trying to discover this document. What would they type into Claude.ai?
-
-Generate 5-10 questions that readers would realistically ask.
-
-### Step 2: Setup Testing
-
-Provide testing instructions:
-1. Open a fresh Claude conversation: https://claude.ai
-2. Paste or share the document content (if using a shared doc platform with connectors enabled, provide the link)
-3. Ask Reader Claude the generated questions
-
-For each question, instruct Reader Claude to provide:
-- The answer
-- Whether anything was ambiguous or unclear
-- What knowledge/context the doc assumes is already known
-
-Check if Reader Claude gives correct answers or misinterprets anything.
-
-### Step 3: Additional Checks
-
-Also ask Reader Claude:
-- "What in this doc might be ambiguous or unclear to readers?"
-- "What knowledge or context does this doc assume readers already have?"
-- "Are there any internal contradictions or inconsistencies?"
-
-### Step 4: Iterate Based on Results
-
-Ask what Reader Claude got wrong or struggled with. Indicate intention to fix those gaps.
-
-Loop back to refinement for any problematic sections.
+問題のあるセクションの洗練にループバック。
 
 ---
 
-### Exit Condition (Both Approaches)
+**サブエージェントへのアクセスがない場合（例：claude.ai Webインターフェース）：**
 
-When Reader Claude consistently answers questions correctly and doesn't surface new gaps or ambiguities, the doc is ready.
+ユーザーが手動でテストを行う必要がある。
 
-## Final Review
+### ステップ1：読者の質問を予測
 
-When Reader Testing passes:
-Announce the doc has passed Reader Claude testing. Before completion:
+このドキュメントを発見しようとするとき、人々がどんな質問をするか尋ねる。Claude.aiに何を入力するか？
 
-1. Recommend they do a final read-through themselves - they own this document and are responsible for its quality
-2. Suggest double-checking any facts, links, or technical details
-3. Ask them to verify it achieves the impact they wanted
+読者が現実的に尋ねる5〜10の質問を生成。
 
-Ask if they want one more review, or if the work is done.
+### ステップ2：テストのセットアップ
 
-**If user wants final review, provide it. Otherwise:**
-Announce document completion. Provide a few final tips:
-- Consider linking this conversation in an appendix so readers can see how the doc was developed
-- Use appendices to provide depth without bloating the main doc
-- Update the doc as feedback is received from real readers
+テスト手順を提供：
+1. 新しいClaude会話を開く：https://claude.ai
+2. ドキュメントコンテンツを貼り付けるか共有（コネクターが有効な共有ドキュメントプラットフォームを使用している場合はリンクを提供）
+3. Reader Claudeに生成された質問をする
 
-## Tips for Effective Guidance
+各質問について、Reader Claudeに以下を提供するよう指示：
+- 回答
+- 曖昧または不明確なものがあったかどうか
+- ドキュメントがすでに知っていると仮定している知識/コンテキスト
 
-**Tone:**
-- Be direct and procedural
-- Explain rationale briefly when it affects user behavior
-- Don't try to "sell" the approach - just execute it
+Reader Claudeが正しい回答を出すか、何かを誤解しているかをチェック。
 
-**Handling Deviations:**
-- If user wants to skip a stage: Ask if they want to skip this and write freeform
-- If user seems frustrated: Acknowledge this is taking longer than expected. Suggest ways to move faster
-- Always give user agency to adjust the process
+### ステップ3：追加チェック
 
-**Context Management:**
-- Throughout, if context is missing on something mentioned, proactively ask
-- Don't let gaps accumulate - address them as they come up
+Reader Claudeにも尋ねる：
+- 「このドキュメントで読者にとって曖昧または不明確かもしれないものは何ですか？」
+- 「このドキュメントは読者がすでに持っていると仮定している知識やコンテキストは何ですか？」
+- 「内部的な矛盾や不整合はありますか？」
 
-**Artifact Management:**
-- Use `create_file` for drafting full sections
-- Use `str_replace` for all edits
-- Provide artifact link after every change
-- Never use artifacts for brainstorming lists - that's just conversation
+### ステップ4：結果に基づいて反復
 
-**Quality over Speed:**
-- Don't rush through stages
-- Each iteration should make meaningful improvements
-- The goal is a document that actually works for readers
+Reader Claudeが間違えたり苦労したりしたものを尋ねる。それらのギャップを修正する意図を示す。
+
+問題のあるセクションの洗練にループバック。
+
+---
+
+### 終了条件（両方のアプローチ）
+
+Reader Claudeが一貫して質問に正しく回答し、新しいギャップや曖昧さを表面化しなくなったとき、ドキュメントは準備完了。
+
+## 最終レビュー
+
+読者テストに合格したとき：
+ドキュメントがReader Claudeテストに合格したことを発表。完了前に：
+
+1. 自分で最終読み通しをすることを推奨 - このドキュメントの所有者であり、その品質に責任がある
+2. 事実、リンク、または技術的詳細を再確認することを提案
+3. 望んだインパクトを達成しているか確認するよう依頼
+
+もう一度レビューしたいか、作業が完了したかを尋ねる。
+
+**ユーザーが最終レビューを望む場合は提供。そうでなければ：**
+ドキュメント完了を発表。いくつかの最終的なヒントを提供：
+- 読者がドキュメントがどのように開発されたかを見られるように、この会話を付録にリンクすることを検討
+- メインドキュメントを膨らませることなく深さを提供するために付録を使用
+- 実際の読者からフィードバックを受けたらドキュメントを更新
+
+## 効果的なガイダンスのヒント
+
+**トーン：**
+- 直接的で手続き的に
+- ユーザーの行動に影響する場合は簡潔に理由を説明
+- アプローチを「売り込もう」としない - ただ実行
+
+**逸脱の処理：**
+- ユーザーがステージをスキップしたい場合：これをスキップしてフリーフォームで書きたいか尋ねる
+- ユーザーがフラストレーションを感じているようなら：予想より時間がかかっていることを認める。より速く進む方法を提案
+- 常にユーザーにプロセスを調整する権限を与える
+
+**コンテキスト管理：**
+- 全体を通じて、言及されたことにコンテキストが欠けている場合は積極的に尋ねる
+- ギャップを蓄積させない - 発生したら対処
+
+**アーティファクト管理：**
+- 完全なセクションの起草には`create_file`を使用
+- すべての編集には`str_replace`を使用
+- 変更のたびにアーティファクトリンクを提供
+- ブレインストーミングリストにはアーティファクトを使用しない - それは会話の一部
+
+**スピードより品質：**
+- ステージを急がない
+- 各イテレーションで意味のある改善を行う
+- 目標は読者にとって実際に機能するドキュメント
