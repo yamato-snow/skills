@@ -1,484 +1,247 @@
 ---
 name: pptx
-description: "Presentation creation, editing, and analysis. When Claude needs to work with presentations (.pptx files) for: (1) Creating new presentations, (2) Modifying or editing content, (3) Working with layouts, (4) Adding comments or speaker notes, or any other presentation tasks"
+description: "プレゼンテーションの作成、編集、分析機能。Claudeがプレゼンテーション（.pptxファイル）を扱う必要がある場合：(1) 新規プレゼンテーションの作成、(2) コンテンツの変更または編集、(3) レイアウトの操作、(4) コメントや発表者ノートの追加、その他のプレゼンテーションタスク"
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
-# PPTX creation, editing, and analysis
+# PPTXの作成、編集、分析
 
-## Overview
+## 概要
 
-A user may ask you to create, edit, or analyze the contents of a .pptx file. A .pptx file is essentially a ZIP archive containing XML files and other resources that you can read or edit. You have different tools and workflows available for different tasks.
+ユーザーは.pptxファイルの作成、編集、または内容の分析を依頼する場合があります。.pptxファイルは本質的にXMLファイルとその他のリソースを含むZIPアーカイブであり、読み取りや編集が可能です。タスクに応じて異なるツールとワークフローが利用可能です。
 
-## Reading and analyzing content
+## コンテンツの読み取りと分析
 
-### Text extraction
-If you just need to read the text contents of a presentation, you should convert the document to markdown:
+### テキスト抽出
+プレゼンテーションのテキスト内容を読み取るだけの場合は、ドキュメントをmarkdownに変換します：
 
 ```bash
-# Convert document to markdown
+# ドキュメントをmarkdownに変換
 python -m markitdown path-to-file.pptx
 ```
 
-### Raw XML access
-You need raw XML access for: comments, speaker notes, slide layouts, animations, design elements, and complex formatting. For any of these features, you'll need to unpack a presentation and read its raw XML contents.
+### Raw XMLアクセス
+コメント、発表者ノート、スライドレイアウト、アニメーション、デザイン要素、複雑な書式設定にはRaw XMLアクセスが必要です。これらの機能には、プレゼンテーションを展開してRaw XMLコンテンツを読み取る必要があります。
 
-#### Unpacking a file
+#### ファイルの展開
 `python ooxml/scripts/unpack.py <office_file> <output_dir>`
 
-**Note**: The unpack.py script is located at `skills/pptx/ooxml/scripts/unpack.py` relative to the project root. If the script doesn't exist at this path, use `find . -name "unpack.py"` to locate it.
+**注意**: unpack.pyスクリプトはプロジェクトルートからの相対パスで`skills/pptx/ooxml/scripts/unpack.py`にあります。このパスにスクリプトが存在しない場合は、`find . -name "unpack.py"`を使用して検索してください。
 
-#### Key file structures
-* `ppt/presentation.xml` - Main presentation metadata and slide references
-* `ppt/slides/slide{N}.xml` - Individual slide contents (slide1.xml, slide2.xml, etc.)
-* `ppt/notesSlides/notesSlide{N}.xml` - Speaker notes for each slide
-* `ppt/comments/modernComment_*.xml` - Comments for specific slides
-* `ppt/slideLayouts/` - Layout templates for slides
-* `ppt/slideMasters/` - Master slide templates
-* `ppt/theme/` - Theme and styling information
-* `ppt/media/` - Images and other media files
+#### 主要なファイル構造
+* `ppt/presentation.xml` - メインプレゼンテーションメタデータとスライド参照
+* `ppt/slides/slide{N}.xml` - 個々のスライドコンテンツ（slide1.xml, slide2.xmlなど）
+* `ppt/notesSlides/notesSlide{N}.xml` - 各スライドの発表者ノート
+* `ppt/comments/modernComment_*.xml` - 特定のスライドへのコメント
+* `ppt/slideLayouts/` - スライドのレイアウトテンプレート
+* `ppt/slideMasters/` - マスタースライドテンプレート
+* `ppt/theme/` - テーマとスタイル情報
+* `ppt/media/` - 画像とその他のメディアファイル
 
-#### Typography and color extraction
-**When given an example design to emulate**: Always analyze the presentation's typography and colors first using the methods below:
-1. **Read theme file**: Check `ppt/theme/theme1.xml` for colors (`<a:clrScheme>`) and fonts (`<a:fontScheme>`)
-2. **Sample slide content**: Examine `ppt/slides/slide1.xml` for actual font usage (`<a:rPr>`) and colors
-3. **Search for patterns**: Use grep to find color (`<a:solidFill>`, `<a:srgbClr>`) and font references across all XML files
+#### タイポグラフィと色の抽出
+**模倣するデザイン例がある場合**: 以下の方法を使用して、まずプレゼンテーションのタイポグラフィと色を分析します：
+1. **テーマファイルを読む**: `ppt/theme/theme1.xml`で色（`<a:clrScheme>`）とフォント（`<a:fontScheme>`）を確認
+2. **スライドコンテンツをサンプリング**: `ppt/slides/slide1.xml`で実際のフォント使用（`<a:rPr>`）と色を調べる
+3. **パターンを検索**: grepを使用してすべてのXMLファイルで色（`<a:solidFill>`、`<a:srgbClr>`）とフォント参照を検索
 
-## Creating a new PowerPoint presentation **without a template**
+## テンプレートなしで新規PowerPointプレゼンテーションを作成
 
-When creating a new PowerPoint presentation from scratch, use the **html2pptx** workflow to convert HTML slides to PowerPoint with accurate positioning.
+新規PowerPointプレゼンテーションをゼロから作成する場合は、**html2pptx**ワークフローを使用してHTMLスライドを正確な位置指定でPowerPointに変換します。
 
-### Design Principles
+### デザイン原則
 
-**CRITICAL**: Before creating any presentation, analyze the content and choose appropriate design elements:
-1. **Consider the subject matter**: What is this presentation about? What tone, industry, or mood does it suggest?
-2. **Check for branding**: If the user mentions a company/organization, consider their brand colors and identity
-3. **Match palette to content**: Select colors that reflect the subject
-4. **State your approach**: Explain your design choices before writing code
+**重要**: プレゼンテーションを作成する前に、コンテンツを分析して適切なデザイン要素を選択してください：
+1. **題材を考慮**: このプレゼンテーションは何についてですか？どのようなトーン、業界、または雰囲気を示唆していますか？
+2. **ブランディングを確認**: ユーザーが会社/組織に言及している場合、そのブランドカラーとアイデンティティを考慮
+3. **パレットをコンテンツに合わせる**: 題材を反映する色を選択
+4. **アプローチを説明**: コードを書く前にデザインの選択を説明
 
-**Requirements**:
-- ✅ State your content-informed design approach BEFORE writing code
-- ✅ Use web-safe fonts only: Arial, Helvetica, Times New Roman, Georgia, Courier New, Verdana, Tahoma, Trebuchet MS, Impact
-- ✅ Create clear visual hierarchy through size, weight, and color
-- ✅ Ensure readability: strong contrast, appropriately sized text, clean alignment
-- ✅ Be consistent: repeat patterns, spacing, and visual language across slides
+**要件**:
+- ✅ コードを書く前にコンテンツに基づいたデザインアプローチを説明
+- ✅ Webセーフフォントのみ使用: Arial, Helvetica, Times New Roman, Georgia, Courier New, Verdana, Tahoma, Trebuchet MS, Impact
+- ✅ サイズ、太さ、色で明確な視覚的階層を作成
+- ✅ 読みやすさを確保: 強いコントラスト、適切なサイズのテキスト、クリーンな配置
+- ✅ 一貫性を保つ: スライド全体でパターン、間隔、視覚言語を繰り返す
 
-#### Color Palette Selection
+#### カラーパレットの選択
 
-**Choosing colors creatively**:
-- **Think beyond defaults**: What colors genuinely match this specific topic? Avoid autopilot choices.
-- **Consider multiple angles**: Topic, industry, mood, energy level, target audience, brand identity (if mentioned)
-- **Be adventurous**: Try unexpected combinations - a healthcare presentation doesn't have to be green, finance doesn't have to be navy
-- **Build your palette**: Pick 3-5 colors that work together (dominant colors + supporting tones + accent)
-- **Ensure contrast**: Text must be clearly readable on backgrounds
+**創造的に色を選ぶ**:
+- **デフォルトを超えて考える**: この特定のトピックに本当に合う色は何ですか？自動的な選択を避ける
+- **複数の角度を考慮**: トピック、業界、雰囲気、エネルギーレベル、対象者、ブランドアイデンティティ（言及されている場合）
+- **冒険的に**: 予想外の組み合わせを試す - ヘルスケアのプレゼンテーションが緑である必要はなく、金融が紺色である必要もない
+- **パレットを構築**: 一緒に機能する3-5色を選ぶ（主要色 + サポート色 + アクセント）
+- **コントラストを確保**: テキストは背景上で明確に読める必要がある
 
-**Example color palettes** (use these to spark creativity - choose one, adapt it, or create your own):
+**カラーパレット例**（創造性を刺激するために使用 - 1つを選ぶか、適応するか、独自に作成）：
 
-1. **Classic Blue**: Deep navy (#1C2833), slate gray (#2E4053), silver (#AAB7B8), off-white (#F4F6F6)
-2. **Teal & Coral**: Teal (#5EA8A7), deep teal (#277884), coral (#FE4447), white (#FFFFFF)
-3. **Bold Red**: Red (#C0392B), bright red (#E74C3C), orange (#F39C12), yellow (#F1C40F), green (#2ECC71)
-4. **Warm Blush**: Mauve (#A49393), blush (#EED6D3), rose (#E8B4B8), cream (#FAF7F2)
-5. **Burgundy Luxury**: Burgundy (#5D1D2E), crimson (#951233), rust (#C15937), gold (#997929)
-6. **Deep Purple & Emerald**: Purple (#B165FB), dark blue (#181B24), emerald (#40695B), white (#FFFFFF)
-7. **Cream & Forest Green**: Cream (#FFE1C7), forest green (#40695B), white (#FCFCFC)
-8. **Pink & Purple**: Pink (#F8275B), coral (#FF574A), rose (#FF737D), purple (#3D2F68)
-9. **Lime & Plum**: Lime (#C5DE82), plum (#7C3A5F), coral (#FD8C6E), blue-gray (#98ACB5)
-10. **Black & Gold**: Gold (#BF9A4A), black (#000000), cream (#F4F6F6)
-11. **Sage & Terracotta**: Sage (#87A96B), terracotta (#E07A5F), cream (#F4F1DE), charcoal (#2C2C2C)
-12. **Charcoal & Red**: Charcoal (#292929), red (#E33737), light gray (#CCCBCB)
-13. **Vibrant Orange**: Orange (#F96D00), light gray (#F2F2F2), charcoal (#222831)
-14. **Forest Green**: Black (#191A19), green (#4E9F3D), dark green (#1E5128), white (#FFFFFF)
-15. **Retro Rainbow**: Purple (#722880), pink (#D72D51), orange (#EB5C18), amber (#F08800), gold (#DEB600)
-16. **Vintage Earthy**: Mustard (#E3B448), sage (#CBD18F), forest green (#3A6B35), cream (#F4F1DE)
-17. **Coastal Rose**: Old rose (#AD7670), beaver (#B49886), eggshell (#F3ECDC), ash gray (#BFD5BE)
-18. **Orange & Turquoise**: Light orange (#FC993E), grayish turquoise (#667C6F), white (#FCFCFC)
+1. **クラシックブルー**: ディープネイビー(#1C2833)、スレートグレー(#2E4053)、シルバー(#AAB7B8)、オフホワイト(#F4F6F6)
+2. **ティール＆コーラル**: ティール(#5EA8A7)、ディープティール(#277884)、コーラル(#FE4447)、白(#FFFFFF)
+3. **ボールドレッド**: レッド(#C0392B)、ブライトレッド(#E74C3C)、オレンジ(#F39C12)、イエロー(#F1C40F)、グリーン(#2ECC71)
+4. **ウォームブラッシュ**: モーブ(#A49393)、ブラッシュ(#EED6D3)、ローズ(#E8B4B8)、クリーム(#FAF7F2)
+5. **バーガンディラグジュアリー**: バーガンディ(#5D1D2E)、クリムゾン(#951233)、ラスト(#C15937)、ゴールド(#997929)
 
-#### Visual Details Options
+#### ビジュアルディテールオプション
 
-**Geometric Patterns**:
-- Diagonal section dividers instead of horizontal
-- Asymmetric column widths (30/70, 40/60, 25/75)
-- Rotated text headers at 90° or 270°
-- Circular/hexagonal frames for images
-- Triangular accent shapes in corners
-- Overlapping shapes for depth
+**ジオメトリックパターン**:
+- 水平ではなく斜めのセクション区切り
+- 非対称な列幅（30/70, 40/60, 25/75）
+- 90°または270°で回転したテキストヘッダー
+- 画像用の円形/六角形フレーム
+- コーナーの三角形アクセントシェイプ
+- 奥行きのための重なるシェイプ
 
-**Border & Frame Treatments**:
-- Thick single-color borders (10-20pt) on one side only
-- Double-line borders with contrasting colors
-- Corner brackets instead of full frames
-- L-shaped borders (top+left or bottom+right)
-- Underline accents beneath headers (3-5pt thick)
+**ボーダー＆フレーム処理**:
+- 片側のみの太い単色ボーダー（10-20pt）
+- コントラストのある色の二重線ボーダー
+- フルフレームの代わりにコーナーブラケット
+- L字型ボーダー（上+左または下+右）
+- ヘッダー下のアンダーラインアクセント（3-5pt太さ）
 
-**Typography Treatments**:
-- Extreme size contrast (72pt headlines vs 11pt body)
-- All-caps headers with wide letter spacing
-- Numbered sections in oversized display type
-- Monospace (Courier New) for data/stats/technical content
-- Condensed fonts (Arial Narrow) for dense information
-- Outlined text for emphasis
+**タイポグラフィ処理**:
+- 極端なサイズコントラスト（72ptヘッドライン vs 11pt本文）
+- ワイドレタースペースの全大文字ヘッダー
+- オーバーサイズ表示タイプの番号付きセクション
+- データ/統計/技術コンテンツ用のモノスペース（Courier New）
+- 密な情報用のコンデンスドフォント（Arial Narrow）
+- 強調用のアウトラインテキスト
 
-**Chart & Data Styling**:
-- Monochrome charts with single accent color for key data
-- Horizontal bar charts instead of vertical
-- Dot plots instead of bar charts
-- Minimal gridlines or none at all
-- Data labels directly on elements (no legends)
-- Oversized numbers for key metrics
+### レイアウトのヒント
+**チャートやテーブルを含むスライドを作成する場合:**
+- **2列レイアウト（推奨）**: 全幅にわたるヘッダーを使用し、その下に2列を配置 - 一方にテキスト/箇条書き、もう一方に注目コンテンツ。これによりバランスが良くなり、チャート/テーブルが読みやすくなる。各コンテンツタイプ用にスペースを最適化するため、不等列幅（例: 40%/60%分割）のフレックスボックスを使用
+- **フルスライドレイアウト**: 注目コンテンツ（チャート/テーブル）をスライド全体に表示して最大のインパクトと読みやすさを実現
+- **縦に積み重ねない**: チャート/テーブルをテキストの下に単一列で配置しない - これは読みやすさとレイアウトの問題を引き起こす
 
-**Layout Innovations**:
-- Full-bleed images with text overlays
-- Sidebar column (20-30% width) for navigation/context
-- Modular grid systems (3×3, 4×4 blocks)
-- Z-pattern or F-pattern content flow
-- Floating text boxes over colored shapes
-- Magazine-style multi-column layouts
+### ワークフロー
+1. **必須 - ファイル全体を読む**: [`html2pptx.md`](html2pptx.md)を最初から最後まで完全に読んでください。**このファイルを読む際に範囲制限を設定しないでください。** プレゼンテーション作成を進める前に、詳細な構文、重要な書式設定ルール、ベストプラクティスのためにファイル全体を読んでください。
+2. 適切なサイズ（16:9の場合は720pt × 405ptなど）で各スライド用のHTMLファイルを作成
+   - すべてのテキストコンテンツに`<p>`, `<h1>`-`<h6>`, `<ul>`, `<ol>`を使用
+   - チャート/テーブルを追加する領域に`class="placeholder"`を使用（視認性のためにグレー背景でレンダリング）
+   - **重要**: まずSharpを使用してグラデーションとアイコンをPNG画像にラスタライズし、その後HTMLで参照
+   - **レイアウト**: チャート/テーブル/画像を含むスライドには、より良い読みやすさのためにフルスライドレイアウトまたは2列レイアウトを使用
+3. [`html2pptx.js`](scripts/html2pptx.js)ライブラリを使用してHTMLスライドをPowerPointに変換し、プレゼンテーションを保存するJavaScriptファイルを作成・実行
+   - `html2pptx()`関数を使用して各HTMLファイルを処理
+   - PptxGenJS APIを使用してプレースホルダー領域にチャートとテーブルを追加
+   - `pptx.writeFile()`を使用してプレゼンテーションを保存
+4. **ビジュアル検証**: サムネイルを生成してレイアウトの問題を確認
+   - サムネイルグリッドを作成: `python scripts/thumbnail.py output.pptx workspace/thumbnails --cols 4`
+   - サムネイル画像を読み取り、以下を注意深く確認：
+     - **テキスト切れ**: ヘッダーバー、シェイプ、またはスライドエッジによるテキスト切れ
+     - **テキスト重なり**: 他のテキストやシェイプとのテキスト重なり
+     - **位置の問題**: スライド境界や他の要素に近すぎるコンテンツ
+     - **コントラストの問題**: テキストと背景間のコントラスト不足
+   - 問題が見つかった場合、HTMLのマージン/間隔/色を調整してプレゼンテーションを再生成
+   - すべてのスライドが視覚的に正しくなるまで繰り返す
 
-**Background Treatments**:
-- Solid color blocks occupying 40-60% of slide
-- Gradient fills (vertical or diagonal only)
-- Split backgrounds (two colors, diagonal or vertical)
-- Edge-to-edge color bands
-- Negative space as a design element
+## 既存のPowerPointプレゼンテーションを編集
 
-### Layout Tips
-**When creating slides with charts or tables:**
-- **Two-column layout (PREFERRED)**: Use a header spanning the full width, then two columns below - text/bullets in one column and the featured content in the other. This provides better balance and makes charts/tables more readable. Use flexbox with unequal column widths (e.g., 40%/60% split) to optimize space for each content type.
-- **Full-slide layout**: Let the featured content (chart/table) take up the entire slide for maximum impact and readability
-- **NEVER vertically stack**: Do not place charts/tables below text in a single column - this causes poor readability and layout issues
+既存のPowerPointプレゼンテーションでスライドを編集する場合は、Raw Office Open XML（OOXML）形式で作業する必要があります。これには.pptxファイルを展開し、XMLコンテンツを編集し、再パックする必要があります。
 
-### Workflow
-1. **MANDATORY - READ ENTIRE FILE**: Read [`html2pptx.md`](html2pptx.md) completely from start to finish. **NEVER set any range limits when reading this file.** Read the full file content for detailed syntax, critical formatting rules, and best practices before proceeding with presentation creation.
-2. Create an HTML file for each slide with proper dimensions (e.g., 720pt × 405pt for 16:9)
-   - Use `<p>`, `<h1>`-`<h6>`, `<ul>`, `<ol>` for all text content
-   - Use `class="placeholder"` for areas where charts/tables will be added (render with gray background for visibility)
-   - **CRITICAL**: Rasterize gradients and icons as PNG images FIRST using Sharp, then reference in HTML
-   - **LAYOUT**: For slides with charts/tables/images, use either full-slide layout or two-column layout for better readability
-3. Create and run a JavaScript file using the [`html2pptx.js`](scripts/html2pptx.js) library to convert HTML slides to PowerPoint and save the presentation
-   - Use the `html2pptx()` function to process each HTML file
-   - Add charts and tables to placeholder areas using PptxGenJS API
-   - Save the presentation using `pptx.writeFile()`
-4. **Visual validation**: Generate thumbnails and inspect for layout issues
-   - Create thumbnail grid: `python scripts/thumbnail.py output.pptx workspace/thumbnails --cols 4`
-   - Read and carefully examine the thumbnail image for:
-     - **Text cutoff**: Text being cut off by header bars, shapes, or slide edges
-     - **Text overlap**: Text overlapping with other text or shapes
-     - **Positioning issues**: Content too close to slide boundaries or other elements
-     - **Contrast issues**: Insufficient contrast between text and backgrounds
-   - If issues found, adjust HTML margins/spacing/colors and regenerate the presentation
-   - Repeat until all slides are visually correct
+### ワークフロー
+1. **必須 - ファイル全体を読む**: [`ooxml.md`](ooxml.md)（約500行）を最初から最後まで完全に読んでください。**このファイルを読む際に範囲制限を設定しないでください。** プレゼンテーション編集の前に、OOXML構造と編集ワークフローの詳細なガイダンスについてファイル全体を読んでください。
+2. プレゼンテーションを展開: `python ooxml/scripts/unpack.py <office_file> <output_dir>`
+3. XMLファイルを編集（主に`ppt/slides/slide{N}.xml`と関連ファイル）
+4. **重要**: 各編集後すぐに検証し、続行前にバリデーションエラーを修正: `python ooxml/scripts/validate.py <dir> --original <file>`
+5. 最終プレゼンテーションをパック: `python ooxml/scripts/pack.py <input_directory> <office_file>`
 
-## Editing an existing PowerPoint presentation
+## テンプレートを使用して新規PowerPointプレゼンテーションを作成
 
-When edit slides in an existing PowerPoint presentation, you need to work with the raw Office Open XML (OOXML) format. This involves unpacking the .pptx file, editing the XML content, and repacking it.
+既存テンプレートのデザインに従うプレゼンテーションを作成する必要がある場合は、テンプレートスライドを複製・再配置してからプレースホルダーコンテキストを置き換えます。
 
-### Workflow
-1. **MANDATORY - READ ENTIRE FILE**: Read [`ooxml.md`](ooxml.md) (~500 lines) completely from start to finish.  **NEVER set any range limits when reading this file.**  Read the full file content for detailed guidance on OOXML structure and editing workflows before any presentation editing.
-2. Unpack the presentation: `python ooxml/scripts/unpack.py <office_file> <output_dir>`
-3. Edit the XML files (primarily `ppt/slides/slide{N}.xml` and related files)
-4. **CRITICAL**: Validate immediately after each edit and fix any validation errors before proceeding: `python ooxml/scripts/validate.py <dir> --original <file>`
-5. Pack the final presentation: `python ooxml/scripts/pack.py <input_directory> <office_file>`
+### ワークフロー
+1. **テンプレートテキストを抽出しビジュアルサムネイルグリッドを作成**:
+   * テキストを抽出: `python -m markitdown template.pptx > template-content.md`
+   * `template-content.md`を読む: テンプレートプレゼンテーションの内容を理解するためにファイル全体を読んでください。**このファイルを読む際に範囲制限を設定しないでください。**
+   * サムネイルグリッドを作成: `python scripts/thumbnail.py template.pptx`
+   * 詳細は[サムネイルグリッドの作成](#サムネイルグリッドの作成)セクションを参照
 
-## Creating a new PowerPoint presentation **using a template**
-
-When you need to create a presentation that follows an existing template's design, you'll need to duplicate and re-arrange template slides before then replacing placeholder context.
-
-### Workflow
-1. **Extract template text AND create visual thumbnail grid**:
-   * Extract text: `python -m markitdown template.pptx > template-content.md`
-   * Read `template-content.md`: Read the entire file to understand the contents of the template presentation. **NEVER set any range limits when reading this file.**
-   * Create thumbnail grids: `python scripts/thumbnail.py template.pptx`
-   * See [Creating Thumbnail Grids](#creating-thumbnail-grids) section for more details
-
-2. **Analyze template and save inventory to a file**:
-   * **Visual Analysis**: Review thumbnail grid(s) to understand slide layouts, design patterns, and visual structure
-   * Create and save a template inventory file at `template-inventory.md` containing:
+2. **テンプレートを分析してインベントリをファイルに保存**:
+   * **ビジュアル分析**: サムネイルグリッドをレビューしてスライドレイアウト、デザインパターン、ビジュアル構造を理解
+   * `template-inventory.md`にテンプレートインベントリファイルを作成して保存：
      ```markdown
-     # Template Inventory Analysis
-     **Total Slides: [count]**
-     **IMPORTANT: Slides are 0-indexed (first slide = 0, last slide = count-1)**
+     # テンプレートインベントリ分析
+     **総スライド数: [数]**
+     **重要: スライドは0インデックス（最初のスライド = 0、最後のスライド = count-1）**
 
-     ## [Category Name]
-     - Slide 0: [Layout code if available] - Description/purpose
-     - Slide 1: [Layout code] - Description/purpose
-     - Slide 2: [Layout code] - Description/purpose
-     [... EVERY slide must be listed individually with its index ...]
+     ## [カテゴリ名]
+     - スライド0: [利用可能な場合はレイアウトコード] - 説明/目的
+     - スライド1: [レイアウトコード] - 説明/目的
+     - スライド2: [レイアウトコード] - 説明/目的
+     [... すべてのスライドを個別にインデックス付きでリスト ...]
      ```
-   * **Using the thumbnail grid**: Reference the visual thumbnails to identify:
-     - Layout patterns (title slides, content layouts, section dividers)
-     - Image placeholder locations and counts
-     - Design consistency across slide groups
-     - Visual hierarchy and structure
-   * This inventory file is REQUIRED for selecting appropriate templates in the next step
 
-3. **Create presentation outline based on template inventory**:
-   * Review available templates from step 2.
-   * Choose an intro or title template for the first slide. This should be one of the first templates.
-   * Choose safe, text-based layouts for the other slides.
-   * **CRITICAL: Match layout structure to actual content**:
-     - Single-column layouts: Use for unified narrative or single topic
-     - Two-column layouts: Use ONLY when you have exactly 2 distinct items/concepts
-     - Three-column layouts: Use ONLY when you have exactly 3 distinct items/concepts
-     - Image + text layouts: Use ONLY when you have actual images to insert
-     - Quote layouts: Use ONLY for actual quotes from people (with attribution), never for emphasis
-     - Never use layouts with more placeholders than you have content
-     - If you have 2 items, don't force them into a 3-column layout
-     - If you have 4+ items, consider breaking into multiple slides or using a list format
-   * Count your actual content pieces BEFORE selecting the layout
-   * Verify each placeholder in the chosen layout will be filled with meaningful content
-   * Select one option representing the **best** layout for each content section.
-   * Save `outline.md` with content AND template mapping that leverages available designs
-   * Example template mapping:
-      ```
-      # Template slides to use (0-based indexing)
-      # WARNING: Verify indices are within range! Template with 73 slides has indices 0-72
-      # Mapping: slide numbers from outline -> template slide indices
-      template_mapping = [
-          0,   # Use slide 0 (Title/Cover)
-          34,  # Use slide 34 (B1: Title and body)
-          34,  # Use slide 34 again (duplicate for second B1)
-          50,  # Use slide 50 (E1: Quote)
-          54,  # Use slide 54 (F2: Closing + Text)
-      ]
-      ```
+3. **テンプレートインベントリに基づいてプレゼンテーションアウトラインを作成**:
+   * ステップ2で利用可能なテンプレートをレビュー
+   * 最初のスライドにはイントロまたはタイトルテンプレートを選択
+   * 他のスライドには安全なテキストベースのレイアウトを選択
+   * **重要: レイアウト構造を実際のコンテンツに合わせる**
+   * 選択したレイアウトをコンテンツマッピングと共に`outline.md`に保存
 
-4. **Duplicate, reorder, and delete slides using `rearrange.py`**:
-   * Use the `scripts/rearrange.py` script to create a new presentation with slides in the desired order:
-     ```bash
-     python scripts/rearrange.py template.pptx working.pptx 0,34,34,50,52
-     ```
-   * The script handles duplicating repeated slides, deleting unused slides, and reordering automatically
-   * Slide indices are 0-based (first slide is 0, second is 1, etc.)
-   * The same slide index can appear multiple times to duplicate that slide
-
-5. **Extract ALL text using the `inventory.py` script**:
-   * **Run inventory extraction**:
-     ```bash
-     python scripts/inventory.py working.pptx text-inventory.json
-     ```
-   * **Read text-inventory.json**: Read the entire text-inventory.json file to understand all shapes and their properties. **NEVER set any range limits when reading this file.**
-
-   * The inventory JSON structure:
-      ```json
-        {
-          "slide-0": {
-            "shape-0": {
-              "placeholder_type": "TITLE",  // or null for non-placeholders
-              "left": 1.5,                  // position in inches
-              "top": 2.0,
-              "width": 7.5,
-              "height": 1.2,
-              "paragraphs": [
-                {
-                  "text": "Paragraph text",
-                  // Optional properties (only included when non-default):
-                  "bullet": true,           // explicit bullet detected
-                  "level": 0,               // only included when bullet is true
-                  "alignment": "CENTER",    // CENTER, RIGHT (not LEFT)
-                  "space_before": 10.0,     // space before paragraph in points
-                  "space_after": 6.0,       // space after paragraph in points
-                  "line_spacing": 22.4,     // line spacing in points
-                  "font_name": "Arial",     // from first run
-                  "font_size": 14.0,        // in points
-                  "bold": true,
-                  "italic": false,
-                  "underline": false,
-                  "color": "FF0000"         // RGB color
-                }
-              ]
-            }
-          }
-        }
-      ```
-
-   * Key features:
-     - **Slides**: Named as "slide-0", "slide-1", etc.
-     - **Shapes**: Ordered by visual position (top-to-bottom, left-to-right) as "shape-0", "shape-1", etc.
-     - **Placeholder types**: TITLE, CENTER_TITLE, SUBTITLE, BODY, OBJECT, or null
-     - **Default font size**: `default_font_size` in points extracted from layout placeholders (when available)
-     - **Slide numbers are filtered**: Shapes with SLIDE_NUMBER placeholder type are automatically excluded from inventory
-     - **Bullets**: When `bullet: true`, `level` is always included (even if 0)
-     - **Spacing**: `space_before`, `space_after`, and `line_spacing` in points (only included when set)
-     - **Colors**: `color` for RGB (e.g., "FF0000"), `theme_color` for theme colors (e.g., "DARK_1")
-     - **Properties**: Only non-default values are included in the output
-
-6. **Generate replacement text and save the data to a JSON file**
-   Based on the text inventory from the previous step:
-   - **CRITICAL**: First verify which shapes exist in the inventory - only reference shapes that are actually present
-   - **VALIDATION**: The replace.py script will validate that all shapes in your replacement JSON exist in the inventory
-     - If you reference a non-existent shape, you'll get an error showing available shapes
-     - If you reference a non-existent slide, you'll get an error indicating the slide doesn't exist
-     - All validation errors are shown at once before the script exits
-   - **IMPORTANT**: The replace.py script uses inventory.py internally to identify ALL text shapes
-   - **AUTOMATIC CLEARING**: ALL text shapes from the inventory will be cleared unless you provide "paragraphs" for them
-   - Add a "paragraphs" field to shapes that need content (not "replacement_paragraphs")
-   - Shapes without "paragraphs" in the replacement JSON will have their text cleared automatically
-   - Paragraphs with bullets will be automatically left aligned. Don't set the `alignment` property on when `"bullet": true`
-   - Generate appropriate replacement content for placeholder text
-   - Use shape size to determine appropriate content length
-   - **CRITICAL**: Include paragraph properties from the original inventory - don't just provide text
-   - **IMPORTANT**: When bullet: true, do NOT include bullet symbols (•, -, *) in text - they're added automatically
-   - **ESSENTIAL FORMATTING RULES**:
-     - Headers/titles should typically have `"bold": true`
-     - List items should have `"bullet": true, "level": 0` (level is required when bullet is true)
-     - Preserve any alignment properties (e.g., `"alignment": "CENTER"` for centered text)
-     - Include font properties when different from default (e.g., `"font_size": 14.0`, `"font_name": "Lora"`)
-     - Colors: Use `"color": "FF0000"` for RGB or `"theme_color": "DARK_1"` for theme colors
-     - The replacement script expects **properly formatted paragraphs**, not just text strings
-     - **Overlapping shapes**: Prefer shapes with larger default_font_size or more appropriate placeholder_type
-   - Save the updated inventory with replacements to `replacement-text.json`
-   - **WARNING**: Different template layouts have different shape counts - always check the actual inventory before creating replacements
-
-   Example paragraphs field showing proper formatting:
-   ```json
-   "paragraphs": [
-     {
-       "text": "New presentation title text",
-       "alignment": "CENTER",
-       "bold": true
-     },
-     {
-       "text": "Section Header",
-       "bold": true
-     },
-     {
-       "text": "First bullet point without bullet symbol",
-       "bullet": true,
-       "level": 0
-     },
-     {
-       "text": "Red colored text",
-       "color": "FF0000"
-     },
-     {
-       "text": "Theme colored text",
-       "theme_color": "DARK_1"
-     },
-     {
-       "text": "Regular paragraph text without special formatting"
-     }
-   ]
+4. **`rearrange.py`を使用してスライドを複製、並べ替え、削除**:
+   ```bash
+   python scripts/rearrange.py template.pptx working.pptx 0,34,34,50,52
    ```
 
-   **Shapes not listed in the replacement JSON are automatically cleared**:
-   ```json
-   {
-     "slide-0": {
-       "shape-0": {
-         "paragraphs": [...] // This shape gets new text
-       }
-       // shape-1 and shape-2 from inventory will be cleared automatically
-     }
-   }
+5. **`inventory.py`スクリプトを使用してすべてのテキストを抽出**:
+   ```bash
+   python scripts/inventory.py working.pptx text-inventory.json
    ```
+   * **text-inventory.jsonを読む**: すべてのシェイプとそのプロパティを理解するためにtext-inventory.jsonファイル全体を読んでください。
 
-   **Common formatting patterns for presentations**:
-   - Title slides: Bold text, sometimes centered
-   - Section headers within slides: Bold text
-   - Bullet lists: Each item needs `"bullet": true, "level": 0`
-   - Body text: Usually no special properties needed
-   - Quotes: May have special alignment or font properties
+6. **置換テキストを生成してJSONファイルにデータを保存**
+   * 前のステップのテキストインベントリに基づいて置換コンテンツを生成
+   * 更新されたインベントリを`replacement-text.json`に保存
 
-7. **Apply replacements using the `replace.py` script**
+7. **`replace.py`スクリプトを使用して置換を適用**
    ```bash
    python scripts/replace.py working.pptx replacement-text.json output.pptx
    ```
 
-   The script will:
-   - First extract the inventory of ALL text shapes using functions from inventory.py
-   - Validate that all shapes in the replacement JSON exist in the inventory
-   - Clear text from ALL shapes identified in the inventory
-   - Apply new text only to shapes with "paragraphs" defined in the replacement JSON
-   - Preserve formatting by applying paragraph properties from the JSON
-   - Handle bullets, alignment, font properties, and colors automatically
-   - Save the updated presentation
+## サムネイルグリッドの作成
 
-   Example validation errors:
-   ```
-   ERROR: Invalid shapes in replacement JSON:
-     - Shape 'shape-99' not found on 'slide-0'. Available shapes: shape-0, shape-1, shape-4
-     - Slide 'slide-999' not found in inventory
-   ```
-
-   ```
-   ERROR: Replacement text made overflow worse in these shapes:
-     - slide-0/shape-2: overflow worsened by 1.25" (was 0.00", now 1.25")
-   ```
-
-## Creating Thumbnail Grids
-
-To create visual thumbnail grids of PowerPoint slides for quick analysis and reference:
+PowerPointスライドのビジュアルサムネイルグリッドを素早い分析と参照用に作成するには：
 
 ```bash
 python scripts/thumbnail.py template.pptx [output_prefix]
 ```
 
-**Features**:
-- Creates: `thumbnails.jpg` (or `thumbnails-1.jpg`, `thumbnails-2.jpg`, etc. for large decks)
-- Default: 5 columns, max 30 slides per grid (5×6)
-- Custom prefix: `python scripts/thumbnail.py template.pptx my-grid`
-  - Note: The output prefix should include the path if you want output in a specific directory (e.g., `workspace/my-grid`)
-- Adjust columns: `--cols 4` (range: 3-6, affects slides per grid)
-- Grid limits: 3 cols = 12 slides/grid, 4 cols = 20, 5 cols = 30, 6 cols = 42
-- Slides are zero-indexed (Slide 0, Slide 1, etc.)
+**機能**:
+- 作成: `thumbnails.jpg`（または大きなデッキの場合は`thumbnails-1.jpg`、`thumbnails-2.jpg`など）
+- デフォルト: 5列、グリッドあたり最大30スライド（5×6）
+- カスタムプレフィックス: `python scripts/thumbnail.py template.pptx my-grid`
+- 列の調整: `--cols 4`（範囲: 3-6、グリッドあたりのスライド数に影響）
+- グリッド制限: 3列 = 12スライド/グリッド、4列 = 20、5列 = 30、6列 = 42
+- スライドはゼロインデックス（スライド0、スライド1など）
 
-**Use cases**:
-- Template analysis: Quickly understand slide layouts and design patterns
-- Content review: Visual overview of entire presentation
-- Navigation reference: Find specific slides by their visual appearance
-- Quality check: Verify all slides are properly formatted
+## スライドを画像に変換
 
-**Examples**:
-```bash
-# Basic usage
-python scripts/thumbnail.py presentation.pptx
+PowerPointスライドを視覚的に分析するには、2段階のプロセスで画像に変換します：
 
-# Combine options: custom name, columns
-python scripts/thumbnail.py template.pptx analysis --cols 4
-```
-
-## Converting Slides to Images
-
-To visually analyze PowerPoint slides, convert them to images using a two-step process:
-
-1. **Convert PPTX to PDF**:
+1. **PPTXをPDFに変換**:
    ```bash
    soffice --headless --convert-to pdf template.pptx
    ```
 
-2. **Convert PDF pages to JPEG images**:
+2. **PDFページをJPEG画像に変換**:
    ```bash
    pdftoppm -jpeg -r 150 template.pdf slide
    ```
-   This creates files like `slide-1.jpg`, `slide-2.jpg`, etc.
+   これにより`slide-1.jpg`、`slide-2.jpg`などのファイルが作成されます。
 
-Options:
-- `-r 150`: Sets resolution to 150 DPI (adjust for quality/size balance)
-- `-jpeg`: Output JPEG format (use `-png` for PNG if preferred)
-- `-f N`: First page to convert (e.g., `-f 2` starts from page 2)
-- `-l N`: Last page to convert (e.g., `-l 5` stops at page 5)
-- `slide`: Prefix for output files
+## コードスタイルガイドライン
+**重要**: PPTX操作用のコードを生成する際：
+- 簡潔なコードを書く
+- 冗長な変数名や重複した操作を避ける
+- 不要なprint文を避ける
 
-Example for specific range:
-```bash
-pdftoppm -jpeg -r 150 -f 2 -l 5 template.pdf slide  # Converts only pages 2-5
-```
+## 依存関係
 
-## Code Style Guidelines
-**IMPORTANT**: When generating code for PPTX operations:
-- Write concise code
-- Avoid verbose variable names and redundant operations
-- Avoid unnecessary print statements
+必要な依存関係（すでにインストールされているはず）：
 
-## Dependencies
-
-Required dependencies (should already be installed):
-
-- **markitdown**: `pip install "markitdown[pptx]"` (for text extraction from presentations)
-- **pptxgenjs**: `npm install -g pptxgenjs` (for creating presentations via html2pptx)
-- **playwright**: `npm install -g playwright` (for HTML rendering in html2pptx)
-- **react-icons**: `npm install -g react-icons react react-dom` (for icons)
-- **sharp**: `npm install -g sharp` (for SVG rasterization and image processing)
-- **LibreOffice**: `sudo apt-get install libreoffice` (for PDF conversion)
-- **Poppler**: `sudo apt-get install poppler-utils` (for pdftoppm to convert PDF to images)
-- **defusedxml**: `pip install defusedxml` (for secure XML parsing)
+- **markitdown**: `pip install "markitdown[pptx]"`（プレゼンテーションからのテキスト抽出用）
+- **pptxgenjs**: `npm install -g pptxgenjs`（html2pptxでプレゼンテーションを作成用）
+- **playwright**: `npm install -g playwright`（html2pptxでのHTMLレンダリング用）
+- **react-icons**: `npm install -g react-icons react react-dom`（アイコン用）
+- **sharp**: `npm install -g sharp`（SVGラスタライズと画像処理用）
+- **LibreOffice**: `sudo apt-get install libreoffice`（PDF変換用）
+- **Poppler**: `sudo apt-get install poppler-utils`（pdftoppmでPDFを画像に変換）
+- **defusedxml**: `pip install defusedxml`（安全なXML解析用）

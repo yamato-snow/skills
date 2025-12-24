@@ -1,17 +1,17 @@
 {
-  "name": "anthropic-agent-skills",
+  "name": "anthropic-agent-skills-ja",
   "owner": {
-    "name": "Keith Lazuka",
-    "email": "klazuka@anthropic.com"
+    "name": "yamato-snow",
+    "email": ""
   },
   "metadata": {
-    "description": "Anthropic example skills",
+    "description": "Anthropicのサンプルスキル（日本語版）",
     "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "document-skills",
-      "description": "Collection of document processing suite including Excel, Word, PowerPoint, and PDF capabilities",
+      "description": "Excel、Word、PowerPoint、PDFの処理機能を含むドキュメント処理スイート",
       "source": "./",
       "strict": false,
       "skills": [
@@ -23,7 +23,7 @@
     },
     {
       "name": "example-skills",
-      "description": "Collection of example skills demonstrating various capabilities including skill creation, MCP building, visual design, algorithmic art, internal communications, web testing, artifact building, Slack GIFs, and theme styling",
+      "description": "スキル作成、MCPサーバー構築、ビジュアルデザイン、アルゴリズムアート、社内コミュニケーション、Webテスト、アーティファクト構築、Slack GIF作成、テーマスタイリングなど、様々な機能を示すサンプルスキル集",
       "source": "./",
       "strict": false,
       "skills": [

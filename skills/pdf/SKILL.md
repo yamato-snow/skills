@@ -1,35 +1,35 @@
 ---
 name: pdf
-description: Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or programmatically process, generate, or analyze PDF documents at scale.
+description: テキストと表の抽出、新規PDFの作成、ドキュメントの結合/分割、フォーム処理のための包括的なPDF操作ツールキット。ClaudeがPDFフォームに入力したり、PDFドキュメントをプログラム的に処理、生成、大規模分析する必要がある場合に使用。
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
-# PDF Processing Guide
+# PDF処理ガイド
 
-## Overview
+## 概要
 
-This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see reference.md. If you need to fill out a PDF form, read forms.md and follow its instructions.
+このガイドでは、Pythonライブラリとコマンドラインツールを使用した基本的なPDF処理操作を説明します。高度な機能、JavaScriptライブラリ、詳細な例についてはreference.mdを参照してください。PDFフォームに入力する必要がある場合は、forms.mdを読み、その指示に従ってください。
 
-## Quick Start
+## クイックスタート
 
 ```python
 from pypdf import PdfReader, PdfWriter
 
-# Read a PDF
+# PDFを読み込む
 reader = PdfReader("document.pdf")
-print(f"Pages: {len(reader.pages)}")
+print(f"ページ数: {len(reader.pages)}")
 
-# Extract text
+# テキストを抽出
 text = ""
 for page in reader.pages:
     text += page.extract_text()
 ```
 
-## Python Libraries
+## Pythonライブラリ
 
-### pypdf - Basic Operations
+### pypdf - 基本操作
 
-#### Merge PDFs
+#### PDFの結合
 ```python
 from pypdf import PdfWriter, PdfReader
 
@@ -43,7 +43,7 @@ with open("merged.pdf", "wb") as output:
     writer.write(output)
 ```
 
-#### Split PDF
+#### PDFの分割
 ```python
 reader = PdfReader("input.pdf")
 for i, page in enumerate(reader.pages):
@@ -53,32 +53,32 @@ for i, page in enumerate(reader.pages):
         writer.write(output)
 ```
 
-#### Extract Metadata
+#### メタデータの抽出
 ```python
 reader = PdfReader("document.pdf")
 meta = reader.metadata
-print(f"Title: {meta.title}")
-print(f"Author: {meta.author}")
-print(f"Subject: {meta.subject}")
-print(f"Creator: {meta.creator}")
+print(f"タイトル: {meta.title}")
+print(f"作成者: {meta.author}")
+print(f"件名: {meta.subject}")
+print(f"作成アプリ: {meta.creator}")
 ```
 
-#### Rotate Pages
+#### ページの回転
 ```python
 reader = PdfReader("input.pdf")
 writer = PdfWriter()
 
 page = reader.pages[0]
-page.rotate(90)  # Rotate 90 degrees clockwise
+page.rotate(90)  # 時計回りに90度回転
 writer.add_page(page)
 
 with open("rotated.pdf", "wb") as output:
     writer.write(output)
 ```
 
-### pdfplumber - Text and Table Extraction
+### pdfplumber - テキストと表の抽出
 
-#### Extract Text with Layout
+#### レイアウト付きテキスト抽出
 ```python
 import pdfplumber
 
@@ -88,18 +88,18 @@ with pdfplumber.open("document.pdf") as pdf:
         print(text)
 ```
 
-#### Extract Tables
+#### 表の抽出
 ```python
 with pdfplumber.open("document.pdf") as pdf:
     for i, page in enumerate(pdf.pages):
         tables = page.extract_tables()
         for j, table in enumerate(tables):
-            print(f"Table {j+1} on page {i+1}:")
+            print(f"ページ{i+1}の表{j+1}:")
             for row in table:
                 print(row)
 ```
 
-#### Advanced Table Extraction
+#### 高度な表抽出
 ```python
 import pandas as pd
 
@@ -108,19 +108,19 @@ with pdfplumber.open("document.pdf") as pdf:
     for page in pdf.pages:
         tables = page.extract_tables()
         for table in tables:
-            if table:  # Check if table is not empty
+            if table:  # 表が空でないことを確認
                 df = pd.DataFrame(table[1:], columns=table[0])
                 all_tables.append(df)
 
-# Combine all tables
+# すべての表を結合
 if all_tables:
     combined_df = pd.concat(all_tables, ignore_index=True)
     combined_df.to_excel("extracted_tables.xlsx", index=False)
 ```
 
-### reportlab - Create PDFs
+### reportlab - PDF作成
 
-#### Basic PDF Creation
+#### 基本的なPDF作成
 ```python
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -128,18 +128,18 @@ from reportlab.pdfgen import canvas
 c = canvas.Canvas("hello.pdf", pagesize=letter)
 width, height = letter
 
-# Add text
+# テキストを追加
 c.drawString(100, height - 100, "Hello World!")
-c.drawString(100, height - 120, "This is a PDF created with reportlab")
+c.drawString(100, height - 120, "これはreportlabで作成したPDFです")
 
-# Add a line
+# 線を追加
 c.line(100, height - 140, 400, height - 140)
 
-# Save
+# 保存
 c.save()
 ```
 
-#### Create PDF with Multiple Pages
+#### 複数ページのPDF作成
 ```python
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
@@ -149,94 +149,94 @@ doc = SimpleDocTemplate("report.pdf", pagesize=letter)
 styles = getSampleStyleSheet()
 story = []
 
-# Add content
-title = Paragraph("Report Title", styles['Title'])
+# コンテンツを追加
+title = Paragraph("レポートタイトル", styles['Title'])
 story.append(title)
 story.append(Spacer(1, 12))
 
-body = Paragraph("This is the body of the report. " * 20, styles['Normal'])
+body = Paragraph("これはレポートの本文です。" * 20, styles['Normal'])
 story.append(body)
 story.append(PageBreak())
 
-# Page 2
-story.append(Paragraph("Page 2", styles['Heading1']))
-story.append(Paragraph("Content for page 2", styles['Normal']))
+# ページ2
+story.append(Paragraph("ページ2", styles['Heading1']))
+story.append(Paragraph("ページ2のコンテンツ", styles['Normal']))
 
-# Build PDF
+# PDFを構築
 doc.build(story)
 ```
 
-## Command-Line Tools
+## コマンドラインツール
 
 ### pdftotext (poppler-utils)
 ```bash
-# Extract text
+# テキストを抽出
 pdftotext input.pdf output.txt
 
-# Extract text preserving layout
+# レイアウトを保持してテキストを抽出
 pdftotext -layout input.pdf output.txt
 
-# Extract specific pages
-pdftotext -f 1 -l 5 input.pdf output.txt  # Pages 1-5
+# 特定のページを抽出
+pdftotext -f 1 -l 5 input.pdf output.txt  # ページ1-5
 ```
 
 ### qpdf
 ```bash
-# Merge PDFs
+# PDFを結合
 qpdf --empty --pages file1.pdf file2.pdf -- merged.pdf
 
-# Split pages
+# ページを分割
 qpdf input.pdf --pages . 1-5 -- pages1-5.pdf
 qpdf input.pdf --pages . 6-10 -- pages6-10.pdf
 
-# Rotate pages
-qpdf input.pdf output.pdf --rotate=+90:1  # Rotate page 1 by 90 degrees
+# ページを回転
+qpdf input.pdf output.pdf --rotate=+90:1  # ページ1を90度回転
 
-# Remove password
+# パスワードを解除
 qpdf --password=mypassword --decrypt encrypted.pdf decrypted.pdf
 ```
 
-### pdftk (if available)
+### pdftk（利用可能な場合）
 ```bash
-# Merge
+# 結合
 pdftk file1.pdf file2.pdf cat output merged.pdf
 
-# Split
+# 分割
 pdftk input.pdf burst
 
-# Rotate
+# 回転
 pdftk input.pdf rotate 1east output rotated.pdf
 ```
 
-## Common Tasks
+## 一般的なタスク
 
-### Extract Text from Scanned PDFs
+### スキャンされたPDFからテキストを抽出
 ```python
-# Requires: pip install pytesseract pdf2image
+# 必要: pip install pytesseract pdf2image
 import pytesseract
 from pdf2image import convert_from_path
 
-# Convert PDF to images
+# PDFを画像に変換
 images = convert_from_path('scanned.pdf')
 
-# OCR each page
+# 各ページをOCR
 text = ""
 for i, image in enumerate(images):
-    text += f"Page {i+1}:\n"
+    text += f"ページ {i+1}:\n"
     text += pytesseract.image_to_string(image)
     text += "\n\n"
 
 print(text)
 ```
 
-### Add Watermark
+### 透かしを追加
 ```python
 from pypdf import PdfReader, PdfWriter
 
-# Create watermark (or load existing)
+# 透かしを作成（または既存のものを読み込む）
 watermark = PdfReader("watermark.pdf").pages[0]
 
-# Apply to all pages
+# すべてのページに適用
 reader = PdfReader("document.pdf")
 writer = PdfWriter()
 
@@ -248,15 +248,15 @@ with open("watermarked.pdf", "wb") as output:
     writer.write(output)
 ```
 
-### Extract Images
+### 画像を抽出
 ```bash
-# Using pdfimages (poppler-utils)
+# pdfimages (poppler-utils)を使用
 pdfimages -j input.pdf output_prefix
 
-# This extracts all images as output_prefix-000.jpg, output_prefix-001.jpg, etc.
+# これによりoutput_prefix-000.jpg、output_prefix-001.jpgなどとして画像が抽出されます
 ```
 
-### Password Protection
+### パスワード保護
 ```python
 from pypdf import PdfReader, PdfWriter
 
@@ -266,29 +266,29 @@ writer = PdfWriter()
 for page in reader.pages:
     writer.add_page(page)
 
-# Add password
+# パスワードを追加
 writer.encrypt("userpassword", "ownerpassword")
 
 with open("encrypted.pdf", "wb") as output:
     writer.write(output)
 ```
 
-## Quick Reference
+## クイックリファレンス
 
-| Task | Best Tool | Command/Code |
+| タスク | 最適なツール | コマンド/コード |
 |------|-----------|--------------|
-| Merge PDFs | pypdf | `writer.add_page(page)` |
-| Split PDFs | pypdf | One page per file |
-| Extract text | pdfplumber | `page.extract_text()` |
-| Extract tables | pdfplumber | `page.extract_tables()` |
-| Create PDFs | reportlab | Canvas or Platypus |
-| Command line merge | qpdf | `qpdf --empty --pages ...` |
-| OCR scanned PDFs | pytesseract | Convert to image first |
-| Fill PDF forms | pdf-lib or pypdf (see forms.md) | See forms.md |
+| PDFを結合 | pypdf | `writer.add_page(page)` |
+| PDFを分割 | pypdf | 1ページずつファイルに |
+| テキストを抽出 | pdfplumber | `page.extract_text()` |
+| 表を抽出 | pdfplumber | `page.extract_tables()` |
+| PDFを作成 | reportlab | CanvasまたはPlatypus |
+| コマンドラインで結合 | qpdf | `qpdf --empty --pages ...` |
+| スキャンPDFをOCR | pytesseract | まず画像に変換 |
+| PDFフォームに入力 | pdf-libまたはpypdf（forms.md参照） | forms.mdを参照 |
 
-## Next Steps
+## 次のステップ
 
-- For advanced pypdfium2 usage, see reference.md
-- For JavaScript libraries (pdf-lib), see reference.md
-- If you need to fill out a PDF form, follow the instructions in forms.md
-- For troubleshooting guides, see reference.md
+- 高度なpypdfium2の使用については、reference.mdを参照
+- JavaScriptライブラリ（pdf-lib）については、reference.mdを参照
+- PDFフォームに入力する必要がある場合は、forms.mdの指示に従う
+- トラブルシューティングガイドについては、reference.mdを参照
